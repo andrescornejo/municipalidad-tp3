@@ -1,0 +1,14 @@
+<Usuarios>
+	<Usuario username="raymond_carver" password="vivaMax5teel" tipo="admin"/>
+	<Usuario username="anisTrujillo" password="veloci345" tipo="admin"/>
+	<Usuario username="cvaslentes" password="382rayomacflurry" tipo="admin"/>
+	<Usuario username="papiPoker" password="alSuavite7" tipo="admin"/>
+	<Usuario username="sugarelDaddy" password="" tipo="admin"/>
+	<Usuario username="santiCarballo21" password="rosadito" tipo="admin"/>
+	<Usuario username="valecita_finsta" password="sugarpur4P4p4" tipo="admin"/>
+	<Usuario username="mikoTheMeka" password="Pewdiepie" tipo="admin"/>
+	<Usuario username="Elementor" password="pieis3.14" tipo="admin"/>
+	<Usuario username="MrNotSoNiceGuy" password="P3.14isPie" tipo="admin"/>
+	<Usuario username="mikoTheMeka" password="PieisnotFun" tipo="admin"/>
+	<Usuario username="cornejo" password="1234" tipo="admin"/>
+</Usuarios>

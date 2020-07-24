@@ -1,0 +1,16 @@
+Lista de trabajo para la capa fisica
+-cambiar la estructura (hace falta la tabla bitacora, tipoEntidad, y corte)
+-cambiar los sps
+-xmls nuevos
+-sps y triggers nuevos
+
+Lista de trabajo para la capa logica
+-para los usuarios no administrador, hacer más clases para los sps
+-diseñar
+
+
+Dudas: 
+-Agregacion = tabla intermedio?
+-Tablas tipo entidad y bitacora estan separadas de toda la base, como funciona?
+-Relaciones 1 a 1 en la capa fisica, como se hacen?
+-Propiedad si esta relacionado a comprobante de pago en la primera tarea, en el diagrama de la segunda no existe esa relacion. La relacion se descarta o no?

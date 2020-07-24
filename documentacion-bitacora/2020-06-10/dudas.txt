@@ -1,0 +1,21 @@
+Dudas:
+Bits de estado pasado, pendiente, cancelado.
+No es mejor hacer otra tabla "Estado"?
+
+
+Por qué hay herencia entre recibos y reconexion:
+
+
+Repaso de pasar de modelo conceptual a físico.
+
+
+Relaciones 1 a 1 no se implementan igual que herencia en sql?
+
+
+Hay registro de consumoM3 en propiedades, pero tambien hay en transac consumo, como funciona eso?
+
+
+Tipo entidad y bitacora cambio, como se implementan si no estan relacionadas con el resto de la bd?
+
+
+Re explicar las tablas de cortes y reconecta

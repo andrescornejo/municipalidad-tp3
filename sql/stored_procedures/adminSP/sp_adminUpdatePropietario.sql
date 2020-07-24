@@ -2,6 +2,7 @@
  * Stored Procedure: csp_adminUpdatePropietario
  * Description: Actualizacion de informacion a Propietario por parte de un Admin.
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -9,7 +10,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_adminUpdatePropietario @inputOLDDocID NVARCHAR(50),
+ALTER PROC csp_adminUpdatePropietario @inID int,
 	@inputName NVARCHAR(50),
 	@inputDocIDVal NVARCHAR(100),
 	@inputDocID NVARCHAR(50),
@@ -21,28 +22,24 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @idPropietario INT
-		DECLARE @tmpJson NVARCHAR(500)
 		DECLARE @jsonAntes NVARCHAR(500)
 		DECLARE @jsonDespues NVARCHAR(500)
-
-		EXEC @idPropietario = csp_getPropietarioIDFromDocID @inputOLDDocID
 
 		DECLARE @DocidID INT
 
 		EXEC @DocidID = csp_getDocidIDFromName @inputDocID
 
-		SET @tmpJson = (
+		SET @jsonAntes = (
 				SELECT P.nombre AS 'Nombre',
-					T.nombre AS 'Tipo DocID',
-					P.valorDocID AS 'Valor ID',
+					P.valorDocID AS 'Valor del documento legal',
+					T.nombre AS 'Tipo de documento legal',
 					'Activo' AS 'Estado'
 				FROM [dbo].[Propietario] P
 				JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
-				WHERE P.id = @idPropietario
+				WHERE P.id = @inID
 				FOR JSON PATH,
 					ROOT('Propietario')
 				)
-		SET @jsonAntes = @tmpJson
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
 		BEGIN TRANSACTION
@@ -51,18 +48,18 @@ BEGIN
 		SET nombre = @inputName,
 			valorDocID = @inputDocIDVal,
 			idTipoDocID = @DocidID
-		WHERE valorDocID = @inputOLDDocID
+		WHERE id = @inID
 			AND activo = 1
 
 		-- insert change into bitacora
 		SET @jsonDespues = (
-				SELECT @inputName AS 'Nombre',
-					T.nombre AS 'Tipo DocID',
-					@inputDocIDVal AS 'Valor ID',
+				SELECT P.nombre AS 'Nombre',
+					P.valorDocID AS 'Valor del documento legal',
+					T.nombre AS 'Tipo de documento legal',
 					'Activo' AS 'Estado'
 				FROM [dbo].[Propietario] P
-				JOIN [dbo].[TipoDocID] T ON T.id = @DocidID
-				WHERE P.valorDocID = @inputDocIDVal
+				JOIN [dbo].[TipoDocID] T ON T.id = P.idTipoDocID
+				WHERE P.id = @inID
 				FOR JSON PATH,
 					ROOT('Propietario')
 				)
@@ -77,7 +74,7 @@ BEGIN
 			insertedIn
 			)
 		SELECT T.id,
-			@idPropietario,
+			@inID,
 			@jsonAntes,
 			@jsonDespues,
 			GETDATE(),

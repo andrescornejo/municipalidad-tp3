@@ -1,4 +1,5 @@
-﻿using Muni.Classes;
+﻿
+using Muni.Classes;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -116,6 +117,7 @@ namespace Muni.Pages.Admin
             else if (jtDelete.Visible)
             {
                 tb_DnumProp.Text = numProp;
+                hf_Uid.Value = id;
             }
         }
 

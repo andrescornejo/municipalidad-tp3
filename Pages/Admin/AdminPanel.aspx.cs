@@ -5,13 +5,13 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Muni.Pages
+namespace Muni.Pages.Admin
 {
-    public partial class propiedadesUpdate : System.Web.UI.Page
+    public partial class AdminPanel : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            //TODO
+
         }
     }
 }

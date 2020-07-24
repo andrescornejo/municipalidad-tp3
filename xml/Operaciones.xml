@@ -643,7 +643,7 @@
     <PropiedadVersusPropietario NumFinca="4204033" identificacion="3101375604"/>
     <PersonaJuridica docidPersonaJuridica="3101375604" DocidRepresentante="111450435" Nombre="SOFIA MATA SOLANO" TipDocIdRepresentante="1"/>
     <Usuario Nombre="FChaves" password="5YwM2" tipo="cliente"/>
-    <Usuario Nombre="AAlfaro" password="fwZwI" tipo="cliente"/>
+    <Usuario Nombre="cornejo" password="1" tipo="cliente"/>
     <Usuario Nombre="TJimenez" password="pmGht" tipo="cliente"/>
     <UsuarioVersusPropiedad NumFinca="2415723" nombreUsuario="FChaves"/>
     <UsuarioVersusPropiedad NumFinca="1528789" nombreUsuario="FChaves"/>
@@ -774,7 +774,7 @@
     <PropiedadVersusPropietario NumFinca="1340644" identificacion="3101359071"/>
     <PersonaJuridica docidPersonaJuridica="3101359071" DocidRepresentante="206130789" Nombre="IGNACIO BOGARIN MARIN" TipDocIdRepresentante="1"/>
     <Usuario Nombre="JFallas" password="19Nph" tipo="cliente"/>
-    <UsuarioVersusPropiedad NumFinca="7825963" nombreUsuario="AAlfaro"/>
+    <UsuarioVersusPropiedad NumFinca="7825963" nombreUsuario="cornejo"/>
     <UsuarioVersusPropiedad NumFinca="1230183" nombreUsuario="JFallas"/>
     <UsuarioVersusPropiedad NumFinca="3130126" nombreUsuario="JFallas"/>
     <ConceptoCobroVersusPropiedad idcobro="5" NumFinca="7825963"/>

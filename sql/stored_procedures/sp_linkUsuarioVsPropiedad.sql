@@ -2,6 +2,7 @@
  * Stored Procedure: csp_linkUsuarioVsPropiedad
  * Description: 
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -9,21 +10,16 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_linkUsuarioVsPropiedad @fechaInput DATE
+ALTER PROC csp_linkUsuarioVsPropiedad @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
 		DECLARE @UserRef NVARCHAR(100)
-		DECLARE @PropiedadRef INT
-		DECLARE @OperacionXML XML
+		DECLARE @PropiedadRef INT 
 		DECLARE @idEntidad INT
 		DECLARE @jsonDespues NVARCHAR(500)
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
-
 		DECLARE @hdoc INT
 
 		EXEC sp_xml_preparedocument @hdoc OUT,
@@ -50,6 +46,8 @@ BEGIN
 				)
 		WHERE @fechaInput = fecha
 
+
+		EXEC sp_xml_removedocument @hdoc;
 		--select * from @tmpUSvsProp
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
@@ -64,17 +62,20 @@ BEGIN
 			P.id,
 			1
 		FROM @tmpUSvsProp tmp
-		JOIN Usuario U ON U.username = tmp.nombreUsuario
-		JOIN Propiedad P ON P.NumFinca = tmp.NumFinca
+		INNER JOIN Usuario U ON U.username = tmp.nombreUsuario
+		INNER JOIN Propiedad P ON P.NumFinca = tmp.NumFinca
 
-		-- insert register into bitacora
+		--insert register into bitacora
 		WHILE (SELECT COUNT(*) FROM @tmpUSvsProp) > 0
 		BEGIN
 			SET @UserRef = (SELECT TOP 1 tmp.nombreUsuario FROM @tmpUSvsProp tmp)
 			SET @PropiedadRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpUSvsProp tmp)
 			DELETE @tmpUSvsProp WHERE nombreUsuario = @UserRef AND NumFinca = @PropiedadRef
 
-			SET @idEntidad = (SELECT UP.id FROM [dbo].[UsuarioVsPropiedad] UP)
+			SET @idEntidad = (SELECT UP.id FROM [dbo].[UsuarioVsPropiedad] UP
+								INNER JOIN [dbo].[Usuario] U ON U.username = @UserRef
+								INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @PropiedadRef
+								WHERE UP.idPropiedad = P.id AND UP.idUsuario = U.id)
 
 			SET @jsonDespues = (SELECT 
 								@UserRef AS 'Nombre Usuario',

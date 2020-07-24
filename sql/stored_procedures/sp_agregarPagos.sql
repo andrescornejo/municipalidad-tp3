@@ -17,7 +17,7 @@ BEGIN
 END
 GO
 
-CREATE PROC csp_agregarPagos @fechaInput DATE
+CREATE PROC csp_agregarPagos @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
@@ -25,10 +25,6 @@ BEGIN
         DECLARE @idCC INT
         DECLARE @NumFinca INT
         DECLARE @idComprobante INT
-		DECLARE @OperacionXML XML
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
         
@@ -55,7 +51,7 @@ BEGIN
             NumFinca INT,
             fecha DATE '../@fecha'
         ) AS X
-        WHERE CONVERT(DATE, '2020-03-07') = fecha
+        WHERE @fechaInput = fecha
         ORDER BY NumFinca 
         
         EXEC sp_xml_removedocument @hdoc;
@@ -72,12 +68,16 @@ BEGIN
                 -- eliminio los Pagos de esa Finca tabla general
                 DELETE FROM @tmpPago
                 WHERE NumFinca = @NumFinca
-                -- Creo un comprobante por los recibos ha pagar de esa propiedad
-                INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
-                SELECT @fechaInput, 0, 1
+                
+                -- IF @idComprobante = NULL OR (SELECT CP.MontoTotal FROM [dbo].[ComprobanteDePago] CP WHERE CP.id = @idComprobante) != 0
+                -- BEGIN
+                    -- Creo un comprobante por los recibos ha pagar de esa propiedad
+                    INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
+                    SELECT @fechaInput, 0, 1
 
-                SET @idComprobante = SCOPE_IDENTITY()
-
+                    SET @idComprobante = (SELECT TOP 1 CP.id FROM [dbo].[ComprobanteDePago] CP ORDER BY CP.id DESC)
+                -- END
+                
                 WHILE (SELECT COUNT(*) FROM @tmpPagoProp) > 0
                 BEGIN
                     SET @idCC = (SELECT TOP 1 tmpP.idTipoRecibo FROM @tmpPagoProp tmpP)
@@ -88,6 +88,7 @@ BEGIN
                     EXEC csp_RealizarPago @NumFinca, @idComprobante, @fechaInput, @idCC
                 END
             END
+            exec csp_cleanComprobantes
         COMMIT
     END TRY
     BEGIN CATCH

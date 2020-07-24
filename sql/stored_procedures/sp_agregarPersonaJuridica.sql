@@ -17,17 +17,11 @@ BEGIN
 END
 GO
 
-CREATE PROC csp_agregarPersonaJuridica @fechaInput DATE
+CREATE PROC csp_agregarPersonaJuridica @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
-
 		DECLARE @hdoc INT
 
 		EXEC sp_xml_preparedocument @hdoc OUT,
@@ -51,7 +45,7 @@ BEGIN
 			fechaxml
 			)
 		SELECT docidPersonaJuridica,
-			TipDocIdPJ,
+			4,
 			DocidRepresentante,
 			Nombre,
 			TipDocIdRepresentante,

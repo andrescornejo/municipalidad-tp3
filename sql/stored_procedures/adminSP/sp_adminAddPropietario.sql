@@ -43,11 +43,8 @@ BEGIN
 			@DocidID,
 			1
 
-		-- insert change into bitácora table
-		SET @idEntidad = (SELECT P.id FROM [dbo].[Propietario] P WHERE P.valorDocID = @inputDocIDVal)
-
-		SET @jsonDespues = (SELECT 
-								P.id AS 'ID', 
+		--insert into bitacora
+		SET @jsonDespues = (SELECT
 								@inputName AS 'Nombre', 
 								T.nombre AS 'Tipo DocID', 
 								@inputDocIDVal AS 'Valor ID', 
@@ -66,7 +63,7 @@ BEGIN
 			insertedIn
 		) SELECT
 		T.id,
-		@idEntidad,
+		SCOPE_IDENTITY(),
 		@jsonDespues,
 		GETDATE(),
 		@inputInsertBy,
@@ -94,4 +91,5 @@ BEGIN
 END
 GO
 
+--exec csp_adminAddPropietario 'andres', '12315', 'Cedula Juridica', 'flamingo', 'hannibal'
 

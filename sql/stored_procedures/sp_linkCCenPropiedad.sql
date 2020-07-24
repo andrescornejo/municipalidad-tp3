@@ -9,16 +9,11 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_linkCCenPropiedad @fechaInput DATE
+ALTER PROC csp_linkCCenPropiedad @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-
-		DECLARE @OperacionXML XML
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
 
 		DECLARE @hdoc INT
 
@@ -45,7 +40,7 @@ BEGIN
 				fecha DATE '../@fecha'
 				)
 		WHERE @fechaInput = fecha
-
+		EXEC sp_xml_removedocument @hdoc;
 		--select * from @tmpCCenProp
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 

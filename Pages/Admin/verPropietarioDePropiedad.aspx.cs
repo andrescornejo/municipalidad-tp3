@@ -32,7 +32,7 @@ namespace Muni.Pages
         }
         protected void backBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("AdminPage.aspx?username=" + usernameGot);
+            Response.Redirect("AdminPanel.aspx");
         }
 
     }

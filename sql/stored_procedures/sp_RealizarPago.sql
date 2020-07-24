@@ -1,20 +1,23 @@
 /*
  * Stored Procedure: csp_PagoAgua
- * Description: 
+ * Description: Realiza el pago de todos los recibos pendientes de una finca
  * Author: Pablo Alpizar
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_RealizarPago @inNumFinca INT, 
-@inIdComprobante INT, 
-@inFecha DATE,
-@idTipoCC INT
-as
-begin
-	begin try
-		set nocount on
+ALTER PROC csp_RealizarPago @inNumFinca INT,
+	@inIdComprobante INT,
+	@inFecha DATE,
+	@idTipoCC INT
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
+
 		DECLARE @idRecibo INT
 		DECLARE @FechaVenc DATE
 		DECLARE @InterestMot MONEY
@@ -24,43 +27,66 @@ begin
 
 		-- tomo todos los recibos del Tipo CC pedientes
 		INSERT INTO @tmpReciboPediente
-		SELECT R.id FROM [dbo].[Recibo] R
+		SELECT R.id
+		FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
-		WHERE R.esPendiente = 1 AND R.idPropiedad = P.id 
-			AND R.activo = 1 AND idConceptoCobro = @idTipoCC
+		WHERE R.esPendiente = 1
+			AND R.idPropiedad = P.id
+			AND R.activo = 1
+			AND idConceptoCobro = @idTipoCC
 		ORDER BY R.fecha ASC
-		
-		SET @TasaInterest = (SELECT CC.TasaInteresesMoratorios FROM [dbo].[ConceptoCobro] CC WHERE CC.id = @idTipoCC)
+
+		SET @TasaInterest = (
+				SELECT CC.TasaInteresesMoratorios
+				FROM [dbo].[ConceptoCobro] CC
+				WHERE CC.id = @idTipoCC
+				)
 
 		BEGIN TRANSACTION
-		WHILE (SELECT COUNT(*) FROM @tmpReciboPediente) > 0
+
+		WHILE (
+				SELECT COUNT(*)
+				FROM @tmpReciboPediente
+				) > 0
 		BEGIN
-			SET @idRecibo = (SELECT TOP 1 tmp.id FROM @tmpReciboPediente tmp)
-			DELETE @tmpReciboPediente WHERE id = @idRecibo
+			SET @idRecibo = (
+					SELECT TOP 1 tmp.id
+					FROM @tmpReciboPediente tmp
+					)
 
-			SET @FechaVenc = (SELECT R.fechaVencimiento FROM [dbo].[Recibo] R WHERE R.id = @idRecibo)
+			DELETE @tmpReciboPediente
+			WHERE id = @idRecibo
 
-			SET @MontoRecibo = (SELECT R.monto FROM [dbo].[Recibo] R WHERE R.id = @idRecibo)
-
+			SET @FechaVenc = (
+					SELECT R.fechaVencimiento
+					FROM [dbo].[Recibo] R
+					WHERE R.id = @idRecibo
+					)
+			SET @MontoRecibo = (
+					SELECT R.monto
+					FROM [dbo].[Recibo] R
+					WHERE R.id = @idRecibo
+					)
 			SET @InterestMot = CASE 
-			WHEN @inFecha <= @FechaVenc THEN 0
-			ELSE (@MontoRecibo * @TasaInterest / 365) * ABS(DATEDIFF(DAY,@FechaVenc, @inFecha))
-			END
+					WHEN @inFecha <= @FechaVenc
+						THEN 0
+					ELSE (@MontoRecibo * @TasaInterest / 365) * ABS(DATEDIFF(DAY, @FechaVenc, @inFecha))
+					END
+
 			-- Si existen intereses moratorios entonces generamos un recibo por el monto
-			IF @InterestMot > 0 
+			IF @InterestMot > 0
 			BEGIN
-				INSERT INTO [dbo].[Recibo](
+				INSERT INTO [dbo].[Recibo] (
 					idComprobantePago,
-            		idPropiedad,
-            		idConceptoCobro, 
-            		fecha, 
-            		fechaVencimiento, 
-            		monto,
-            		esPendiente,
-            		Activo
-        			)
-				SELECT 
-					@inIdComprobante,
+					idPropiedad,
+					idConceptoCobro,
+					fecha,
+					fechaVencimiento,
+					monto,
+					esPendiente,
+					Activo
+					)
+				SELECT @inIdComprobante,
 					P.id,
 					CC.id,
 					@inFecha,
@@ -70,16 +96,19 @@ begin
 					1
 				FROM [dbo].[Propiedad] P
 				JOIN [dbo].[ConceptoCobro] CC ON CC.nombre = 'Interes Moratorio'
-				-- incluimos en valor del recibo en el comprobante
+				WHERE P.NumFinca = @inNumFinca
+
+				-- incluimos en monto del recibo en el comprobante
 				UPDATE [dbo].[ComprobanteDePago]
 				SET MontoTotal = MontoTotal + @InterestMot
-				WHERE id = @inIdComprobante	
+				WHERE id = @inIdComprobante
 			END
 
 			-- Actualizo los valores del recibo
 			UPDATE [dbo].[Recibo]
 			SET esPendiente = 0
 			WHERE id = @idRecibo
+
 			-- Actualizo el idComprobante
 			UPDATE [dbo].[Recibo]
 			SET idComprobantePago = @inIdComprobante
@@ -87,14 +116,25 @@ begin
 
 			-- Actualizo el monto total del comprobante
 			UPDATE [dbo].[ComprobanteDePago]
-			SET MontoTotal = MontoTotal + (SELECT R.monto FROM [dbo].[Recibo] R WHERE R.id = @idRecibo)
+			SET MontoTotal = MontoTotal + (
+					SELECT R.monto
+					FROM [dbo].[Recibo] R
+					WHERE R.id = @idRecibo
+					)
 			WHERE id = @inIdComprobante
+
+			IF EXISTS (SELECT RE.id FROM [dbo].[Reconexion] RE WHERE RE.id = @idRecibo)
+			BEGIN
+				EXEC csp_RealizarPago @inNumFinca, @inIdComprobante, @inFecha, 1
+				DECLARE @idPropiedad INT = (SELECT P.id FROM [dbo].[Propiedad] P WHERE P.NumFinca = @inNumFinca)
+				EXEC csp_generarOrdReconexion @inFecha, @idPropiedad, @idRecibo
+			END
 		END
 
 		COMMIT
+	END TRY
 
-	end try
-	begin catch
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -105,7 +145,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

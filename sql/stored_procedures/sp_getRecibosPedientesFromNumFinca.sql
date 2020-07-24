@@ -1,32 +1,34 @@
 /*
  * Stored Procedure: csp_getRecibosPendientes
  * Description: 
- * Author: Andres Cornejo
+ * Author: Pablo Alpizar
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_getRecibosPendientes @inNumFinca INT
-as
-begin
-	begin try
-		set nocount on
+ALTER PROC csp_getRecibosPendientes @inNumFinca INT
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-		SELECT 
-			@inNumFinca AS [Numero Finca],
+		SELECT @inNumFinca AS [Numero Finca],
 			C.nombre AS [Concepto Cobro],
 			R.fecha AS [Fecha de Emision],
 			R.fechaVencimiento AS [Fecha Vencimiento],
 			R.monto AS [Monto Total]
 		FROM [dbo].[Recibo] R
-		INNER JOIN [dbo].[ConceptoCobro] C ON R.idConceptoCobro = C.id 
+		INNER JOIN [dbo].[ConceptoCobro] C ON R.idConceptoCobro = C.id
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
-		WHERE R.esPendiente = 1 AND R.activo = 1
+		WHERE R.esPendiente = 1
+			AND R.activo = 1
 			AND R.idPropiedad = P.id
+	END TRY
 
-	end try
-	begin catch
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -37,7 +39,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

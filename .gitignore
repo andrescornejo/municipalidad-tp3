@@ -3,6 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Added by andres
+# Removes all js libraries and css
+*.js
+*.css
+*.map
+*.ts
+
 # User-specific files
 *.rsuser
 *.suo

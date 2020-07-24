@@ -79,7 +79,7 @@ namespace Muni.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data Source=HUSTLEBONES\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True.
+        ///   Looks up a localized string similar to Data Source=HOTHEAD\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True.
         /// </summary>
         internal static string CONNECTIONSTRING {
             get {

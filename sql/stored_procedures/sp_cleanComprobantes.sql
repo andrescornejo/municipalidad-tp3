@@ -1,7 +1,7 @@
 /*
- * Stored Procedure: csp_generarOrdReconexion
+ * Stored Procedure: 
  * Description: 
- * Author: Pablo Alpizar
+ * Author: Andres Cornejo
  */
 USE municipalidad
 GO
@@ -9,16 +9,17 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_generarOrdReconexion @inFecha DATE, @idPropiedad INT, @idRecibo INT
+ALTER PROC csp_cleanComprobantes
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		INSERT INTO [dbo].[Reconteca] (fecha, idReconexion, idPropiedad, activo)
-		SELECT @inFecha, @idRecibo, @idPropiedad, 1
-		RETURN 1
+		DELETE
+		FROM ComprobanteDePago
+		WHERE MontoTotal = 0.00
 	END TRY
+
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK

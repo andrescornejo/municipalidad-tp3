@@ -33,7 +33,7 @@ namespace Muni
                     //throw new NotImplementedException("No se ha implementado el cliente");
                 case 1:
                     Globals.setUser(usernameGot, true);
-                    Response.Redirect("Admin/AdminPage.aspx");
+                    Response.Redirect("Admin/AdminPanel.aspx");
                     break;
                 default:
                     MessageBox.Show("Failed to log in.");

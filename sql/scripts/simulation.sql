@@ -3,40 +3,57 @@
 USE municipalidad
 GO
 
-set nocount on;
+SET NOCOUNT ON;
 
-declare @FechasOperacionXML xml
-select @FechasOperacionXML = F
-from openrowset(bulk 'C:\xml\Operaciones.xml', single_blob) as FechasOperacion(F)
+DECLARE @FechasOperacionXML XML
 
-declare @hdoc int
-exec sp_xml_preparedocument @hdoc out, @FechasOperacionXML
+SELECT @FechasOperacionXML = F
+FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS FechasOperacion(F)
 
-declare @fechas table(fechaOperacion date)
+DECLARE @hdoc INT
 
-insert @fechas(fechaOperacion)
-select fecha from openxml(@hdoc,'/Operaciones_por_Dia/OperacionDia',1)
-with (fecha date)
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@FechasOperacionXML
+
+DECLARE @fechas TABLE (fechaOperacion DATE)
+
+INSERT @fechas (fechaOperacion)
+SELECT fecha
+FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia', 1) WITH (fecha DATE)
+
+EXEC sp_xml_removedocument @hdoc;
 
 --select * from @fechas
+DECLARE @firstDate DATE;
+DECLARE @lastDate DATE;
 
-declare @firstDate date;
-declare @lastDate date;
+SET @firstDate = (
+		SELECT min(T.fechaOperacion)
+		FROM @fechas T
+		)
+SET @lastDate = (
+		SELECT max(T.fechaOperacion)
+		FROM @fechas T
+		)
 
-set @firstDate = (select min(T.fechaOperacion) from @fechas T)
-set @lastDate = (select max(T.fechaOperacion) from @fechas T)
+WHILE (@firstDate <= @lastDate)
+BEGIN
+	PRINT ('Fecha actual: ' + convert(VARCHAR(30), @firstDate))
 
-while(@firstDate <= @lastDate)
-    begin
-        print('Fecha actual: '+ convert(varchar(30),@firstDate))
-        --Execute every day
-        exec csp_agregarPropiedades @firstDate
-        exec csp_agregarPropietarios @firstDate
-        exec csp_agregarPersonaJuridica @firstDate
-        exec csp_linkPropiedadDelPropietario @firstDate
-        exec csp_linkCCenPropiedad @firstDate
-        exec csp_agregarUsuarios @firstDate
-        exec csp_linkUsuarioVsPropiedad @firstDate
-
-        set @firstDate = dateadd(day,1,@firstDate);
-    end
+	--Execute every day
+	EXEC csp_agregarPropiedades @firstDate, @FechasOperacionXML
+	EXEC csp_agregarPropietarios @firstDate, @FechasOperacionXML
+	EXEC csp_agregarPersonaJuridica @firstDate, @FechasOperacionXML
+	EXEC csp_linkPropiedadDelPropietario @firstDate, @FechasOperacionXML
+	EXEC csp_linkCCenPropiedad @firstDate, @FechasOperacionXML
+	EXEC csp_agregarUsuarios @firstDate, @FechasOperacionXML
+	EXEC csp_linkUsuarioVsPropiedad @firstDate, @FechasOperacionXML
+	EXEC csp_agregarCambioValorPropiedad @firstDate, @FechasOperacionXML 
+	EXEC csp_agregarTransConsumo @firstDate, @FechasOperacionXML
+	EXEC csp_generarReciboCCFijo @firstDate
+	EXEC csp_generarReciboCCPorcentaje @firstDate
+	EXEC csp_generarRecibosAgua @firstDate
+	EXEC csp_agregarPagos @firstDate, @FechasOperacionXML
+	exec csp_generarOrdCorta @firstDate
+	SET @firstDate = dateadd(day, 1, @firstDate);
+END

@@ -2,6 +2,7 @@
  * Stored Procedure: csp_agregarUsuarios
  * Description: Agrega los usuarios de una fecha
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -9,18 +10,15 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_agregarUsuarios @fechaInput DATE
+ALTER PROC csp_agregarUsuarios @fechaInput DATE, @OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 		DECLARE @jsonDespues NVARCHAR(500)
-		DECLARE @OperacionXML XML
 		DECLARE @idEntidad INT
 		DECLARE @Admin NVARCHAR(20)
-
-		SELECT @OperacionXML = O
-		FROM openrowset(BULK 'C:\xml\Operaciones.xml', single_blob) AS Operacion(O)
+		DECLARE @username NVARCHAR(100)
 
 		DECLARE @hdoc INT
 
@@ -39,16 +37,18 @@ BEGIN
 			fechaxml
 			)
 		SELECT Nombre,
-			passwd,
+			password,
 			fecha
 		FROM openxml(@hdoc, '/Operaciones_por_Dia/OperacionDia/Usuario', 1) WITH (
 				Nombre NVARCHAR(50),
-				passwd NVARCHAR(max),
+				password NVARCHAR(max),
 				fecha DATE '../@fecha'
 				)
 		WHERE @fechaInput = fecha
 
-		-- SELECT * FROM @tmpUsuario
+
+		EXEC sp_xml_removedocument @hdoc;
+		--SELECT * FROM @tmpUsuario
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
@@ -69,15 +69,18 @@ BEGIN
 
 		WHILE (SELECT COUNT(*) FROM @tmpUsuario) > 0
 		BEGIN
-			
+			SET @username = (SELECT TOP 1 tmp.nombre FROM @tmpUsuario tmp)
+			DELETE @tmpUsuario WHERE nombre = @username
 
-			SET @Admin = (CASE WHEN @inputBit = 1
+			SET @idEntidad = (SELECT U.id FROM [dbo].[Usuario] U WHERE U.username = @username)
+
+			SET @Admin = (CASE WHEN (SELECT U.isAdmin FROM [dbo].[Usuario] U WHERE U.id = @idEntidad) = 1
 							THEN 'Administrador'
 							ELSE 'Cliente'
 						END)
 			SET @jsonDespues = (SELECT
 								@idEntidad AS 'ID',
-								@inputUsername AS 'Nombre Usuario', 
+								@username AS 'Nombre Usuario', 
 								'*******' AS 'Contrasenna', 
 								@Admin AS 'Tipo Usuario', 
 								'Activo' AS 'Estado'

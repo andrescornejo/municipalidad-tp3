@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 
 namespace Muni.Pages.Admin
 {
-    public partial class crudUsuario : System.Web.UI.Page
+    public partial class crudPropietarios : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -22,50 +22,52 @@ namespace Muni.Pages.Admin
 
         #region CRUD
 
-        protected void btnCreateUsr_Click(object sender, EventArgs e)
+        protected void btnCreatePropiet_Click(object sender, EventArgs e)
         {
-            string usr = tbCusr.Text;
-            string passwd = tbCpsswd.Text;
+            string name = tbCnombre.Text;
+            string docid = tbCdocID.Text;
+            string tid = ddCTDocID.SelectedValue;
 
-            if (tbCusr.Text!="" && tbCpsswd.Text!="")
+            if (tbCnombre.Text != "" && tbCdocID.Text != "")
             {
-                AdminWeb.createUsuario(usr, passwd, cbCadmin.Checked, Globals.CURRENTUSER, Globals.CURRENTIP);
+                AdminWeb.createPropietario(name, docid, tid, Globals.CURRENTUSER, Globals.CURRENTIP);
                 clearTextBoxes();
                 reloadGridView();
-                MessageBox.Show("Usuario agregado: " + usr);
+                MessageBox.Show("Usuario agregado: " + name);
             }
             else
                 MessageBox.Show("Error en las entradas");
         }
 
-        protected void btnUpdateUsr_Click(object sender, EventArgs e)
+        protected void btnUpdatePropiet_Click(object sender, EventArgs e)
         {
-            string usr = tbUusr.Text;
-            string psswd = tbUpsswd.Text;
-            bool isAdm = cbUadmin.Checked;
-            int id;
-            bool idResult = Int32.TryParse(hf_id.Value, out id);
+            string name = tbUnombre.Text;
+            string docid = tbUdocID.Text;
+            string tid = ddUTDocID.SelectedValue;
+            int inID;
+            bool idResult = Int32.TryParse(hf_id.Value, out inID);
 
-            if(tbUusr.Text!="" && tbUpsswd.Text!="" && idResult)
+            if (tbUnombre.Text != "" && tbUdocID.Text != "" && idResult)
             {
-                AdminWeb.updateUsuario(id, usr, psswd, isAdm, Globals.CURRENTUSER, Globals.CURRENTIP);
+                AdminWeb.updatePropietario(inID, name, docid, tid, Globals.CURRENTUSER, Globals.CURRENTIP);
                 clearTextBoxes();
                 reloadGridView();
-                MessageBox.Show("Usuario actualizado: " + usr);
+                MessageBox.Show("Usuario actualizado: " + name);
             }
             else
                 MessageBox.Show("Error en las entradas");
         }
 
-        protected void btnDeleteUsr_Click(object sender, EventArgs e)
+        protected void btnDeletePropiet_Click(object sender, EventArgs e)
         {
-            string usr = tbDusr.Text;
-            if (tbDusr.Text != "")
+            string docid = tbDdocID.Text;
+
+            if (tbDdocID.Text != "")
             {
-                AdminWeb.deleteUsuario(usr, Globals.CURRENTUSER, Globals.CURRENTIP);
+                AdminWeb.deletePropietario(docid, Globals.CURRENTUSER, Globals.CURRENTIP);
                 clearTextBoxes();
                 reloadGridView();
-                MessageBox.Show("Usuario borrado: " + usr);
+                MessageBox.Show("Usuario borrado.");
             }
             else
                 MessageBox.Show("Error en las entradas");
@@ -73,60 +75,60 @@ namespace Muni.Pages.Admin
 
         #endregion
 
-        protected void gridUsr_RowCommand(object sender, GridViewCommandEventArgs e)
+        protected void gridPropiet_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName == "Select")
             {
                 //Determine the RowIndex of the Row whose Button was clicked.
                 int rowIndex = Convert.ToInt32(e.CommandArgument);
                 //Reference the GridView Row.
-                GridViewRow row = gridUsr.Rows[rowIndex];
+                GridViewRow row = gridPropiet.Rows[rowIndex];
                 //Get the values.
 
-                string usr = row.Cells[1].Text;
-                string passwd = row.Cells[2].Text;
-                string isAdm = row.Cells[3].Text;
+                string name = row.Cells[1].Text;
+                string docid = row.Cells[2].Text;
+                string tid = row.Cells[3].Text;
                 string id = row.Cells[4].Text;
 
-                fillTextBoxes(usr, passwd, isAdm, id);
+                fillTextBoxes(name, docid, tid, id);
             }
         }
 
-        protected void fillTextBoxes(string usr, string passwd, string isAdm, string id)
+        protected void fillTextBoxes(string name, string docid, string tid, string id)
         {
             if (jtCreate.Visible)
                 return;
             else if (jtUpdate.Visible)
             {
-                tbUusr.Text = usr;
-                tbUpsswd.Text = passwd;
-                cbUadmin.Checked = Convert.ToBoolean(isAdm); ;
+                tbUnombre.Text = name;
+                tbUdocID.Text = docid;
+                ddUTDocID.SelectedValue = tid;
                 hf_id.Value = id;
             }
             else if (jtDelete.Visible)
             {
-                tbDusr.Text = usr;
+                tbDdocID.Text = docid;
                 hf_id.Value = id;
             }
         }
 
         protected void reloadGridView()
         {
-            this.gridUsr.Columns[4].Visible = true;
-            this.gridUsr.DataSource = AdminWeb.getUsuarios();
-            this.gridUsr.DataBind();
-            this.gridUsr.Columns[4].Visible = false;
+            this.gridPropiet.Columns[4].Visible = true;
+            this.gridPropiet.DataSource = AdminWeb.getPropietarios();
+            this.gridPropiet.DataBind();
+            this.gridPropiet.Columns[4].Visible = false;
         }
 
         protected void clearTextBoxes()
         {
-            tbCusr.Text = "";
-            tbCpsswd.Text = "";
-            cbCadmin.Checked = false;
-            tbUusr.Text = "";
-            tbUpsswd.Text = "";
-            cbUadmin.Checked = false;
-            tbDusr.Text = "";
+            tbCnombre.Text = "";
+            tbCdocID.Text = "";
+            ddCTDocID.SelectedValue = "Cedula Nacional";
+            tbUnombre.Text = "";
+            tbUdocID.Text = "";
+            ddUTDocID.SelectedValue = "Cedula Nacional";
+            tbDdocID.Text = "";
             hf_id.Value = "";
         }
 
@@ -171,7 +173,6 @@ namespace Muni.Pages.Admin
             Globals.CURRENTPANEL = "delete";
             updatePanels();
         }
-
 
     }
 }

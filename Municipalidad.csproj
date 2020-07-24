@@ -85,16 +85,12 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\dashboard.css" />
     <Content Include="Content\login-page.css" />
+    <Content Include="Pages\Admin\AdminPanel.aspx" />
     <Content Include="Pages\Admin\AdminPanelUC.ascx" />
     <Content Include="Pages\Admin\consultaCambioEntidad.aspx" />
     <Content Include="Pages\Admin\crudPropiedades.aspx" />
+    <Content Include="Pages\Admin\crudPropietarios.aspx" />
     <Content Include="Pages\Admin\crudUsuario.aspx" />
-    <Content Include="Pages\Admin\propiedadesCreate.aspx" />
-    <Content Include="Pages\Admin\propiedadesCRUD.aspx" />
-    <Content Include="Pages\Admin\propiedadesDelete.aspx" />
-    <Content Include="Pages\Admin\propiedadesUpdate.aspx" />
-    <Content Include="Pages\Admin\usuariosCreate.aspx" />
-    <Content Include="Pages\Admin\AdminPage.aspx" />
     <Content Include="Pages\Admin\crudTables.aspx" />
     <Content Include="Pages\Client\ClientPanel.aspx" />
     <Content Include="Pages\LoginPage.aspx" />
@@ -104,13 +100,6 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
-    <Content Include="Pages\Admin\propietariosCreate.aspx" />
-    <Content Include="Pages\Admin\propietariosCRUD.aspx" />
-    <Content Include="Pages\Admin\propietariosDelete.aspx" />
-    <Content Include="Pages\Admin\propietariosUpdate.aspx" />
-    <Content Include="Pages\Admin\usuariosCRUD.aspx" />
-    <Content Include="Pages\Admin\usuariosDelete.aspx" />
-    <Content Include="Pages\Admin\usuariosUpdate.aspx" />
     <Content Include="Pages\Admin\verPropiedadesDeUsuario.aspx" />
     <Content Include="Pages\Admin\verPropietarioDePropiedad.aspx" />
     <Content Include="Pages\Admin\verPropiedadesDePropietario.aspx" />
@@ -304,6 +293,13 @@
     <Compile Include="Classes\Cliente.cs" />
     <Compile Include="Classes\Globals.cs" />
     <Compile Include="Classes\MessageBox.cs" />
+    <Compile Include="Pages\Admin\AdminPanel.aspx.cs">
+      <DependentUpon>AdminPanel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Admin\AdminPanel.aspx.designer.cs">
+      <DependentUpon>AdminPanel.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Admin\AdminPanelUC.ascx.cs">
       <DependentUpon>AdminPanelUC.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -325,54 +321,19 @@
     <Compile Include="Pages\Admin\crudPropiedades.aspx.designer.cs">
       <DependentUpon>crudPropiedades.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Admin\crudPropietarios.aspx.cs">
+      <DependentUpon>crudPropietarios.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Admin\crudPropietarios.aspx.designer.cs">
+      <DependentUpon>crudPropietarios.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Admin\crudUsuario.aspx.cs">
       <DependentUpon>crudUsuario.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Pages\Admin\crudUsuario.aspx.designer.cs">
       <DependentUpon>crudUsuario.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesCreate.aspx.cs">
-      <DependentUpon>propiedadesCreate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesCreate.aspx.designer.cs">
-      <DependentUpon>propiedadesCreate.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesCRUD.aspx.cs">
-      <DependentUpon>propiedadesCRUD.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesCRUD.aspx.designer.cs">
-      <DependentUpon>propiedadesCRUD.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesDelete.aspx.cs">
-      <DependentUpon>propiedadesDelete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesDelete.aspx.designer.cs">
-      <DependentUpon>propiedadesDelete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesUpdate.aspx.cs">
-      <DependentUpon>propiedadesUpdate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propiedadesUpdate.aspx.designer.cs">
-      <DependentUpon>propiedadesUpdate.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosCreate.aspx.cs">
-      <DependentUpon>usuariosCreate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosCreate.aspx.designer.cs">
-      <DependentUpon>usuariosCreate.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\AdminPage.aspx.cs">
-      <DependentUpon>AdminPage.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\AdminPage.aspx.designer.cs">
-      <DependentUpon>AdminPage.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Admin\crudTables.aspx.cs">
       <DependentUpon>crudTables.aspx</DependentUpon>
@@ -394,55 +355,6 @@
     </Compile>
     <Compile Include="Pages\LoginPage.aspx.designer.cs">
       <DependentUpon>LoginPage.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosCreate.aspx.cs">
-      <DependentUpon>propietariosCreate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosCreate.aspx.designer.cs">
-      <DependentUpon>propietariosCreate.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosCRUD.aspx.cs">
-      <DependentUpon>propietariosCRUD.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosCRUD.aspx.designer.cs">
-      <DependentUpon>propietariosCRUD.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosDelete.aspx.cs">
-      <DependentUpon>propietariosDelete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosDelete.aspx.designer.cs">
-      <DependentUpon>propietariosDelete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosUpdate.aspx.cs">
-      <DependentUpon>propietariosUpdate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\propietariosUpdate.aspx.designer.cs">
-      <DependentUpon>propietariosUpdate.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosCRUD.aspx.cs">
-      <DependentUpon>usuariosCRUD.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosCRUD.aspx.designer.cs">
-      <DependentUpon>usuariosCRUD.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosDelete.aspx.cs">
-      <DependentUpon>usuariosDelete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosDelete.aspx.designer.cs">
-      <DependentUpon>usuariosDelete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosUpdate.aspx.cs">
-      <DependentUpon>usuariosUpdate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Admin\usuariosUpdate.aspx.designer.cs">
-      <DependentUpon>usuariosUpdate.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Admin\verPropiedadesDeUsuario.aspx.cs">
       <DependentUpon>verPropiedadesDeUsuario.aspx</DependentUpon>

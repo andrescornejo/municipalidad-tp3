@@ -22,21 +22,22 @@ BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		DECLARE @jsonAntes NVARCHAR(500),
-			@jsonDespues NVARCHAR(500)
+--Logging to table Bitacora is disabled because a trigger does it 
+		-- DECLARE @jsonAntes NVARCHAR(500),
+		-- 	@jsonDespues NVARCHAR(500)
 
-		SET @jsonAntes = (
-				SELECT p.NumFinca AS 'Número de propiedad',
-					p.Valor AS 'Valor monetario',
-					p.Direccion AS 'Dirección',
-					p.ConsumoAcumuladoM3 AS 'Consumo acumulado m3',
-					p.UltimoConsumoM3 AS 'Ultimo consumo m3',
-					'Activo' AS 'Estado'
-				FROM Propiedad p
-				WHERE p.id = @inID
-				FOR JSON PATH,
-					ROOT('Propiedad')
-				)
+		-- SET @jsonAntes = (
+		-- 		SELECT p.NumFinca AS 'Número de propiedad',
+		-- 			p.Valor AS 'Valor monetario',
+		-- 			p.Direccion AS 'Dirección',
+		-- 			p.ConsumoAcumuladoM3 AS 'Consumo acumulado m3',
+		-- 			p.UltimoConsumoM3 AS 'Ultimo consumo m3',
+		-- 			'Activo' AS 'Estado'
+		-- 		FROM Propiedad p
+		-- 		WHERE p.id = @inID
+		-- 		FOR JSON PATH,
+		-- 			ROOT('Propiedad')
+		-- 		)
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
 		BEGIN TRAN
@@ -50,37 +51,37 @@ BEGIN
 		WHERE id = @inID
 			AND activo = 1
 
-		SET @jsonDespues = (
-				SELECT p.NumFinca AS 'Número de propiedad',
-					p.Valor AS 'Valor monetario',
-					p.Direccion AS 'Dirección',
-					p.ConsumoAcumuladoM3 AS 'Consumo acumulado m3',
-					p.UltimoConsumoM3 AS 'Ultimo consumo m3',
-					'Activo' AS 'Estado'
-				FROM Propiedad p
-				WHERE p.id = @inID
-				FOR JSON PATH,
-					ROOT('Propiedad')
-				)
+		-- SET @jsonDespues = (
+		-- 		SELECT p.NumFinca AS 'Número de propiedad',
+		-- 			p.Valor AS 'Valor monetario',
+		-- 			p.Direccion AS 'Dirección',
+		-- 			p.ConsumoAcumuladoM3 AS 'Consumo acumulado m3',
+		-- 			p.UltimoConsumoM3 AS 'Ultimo consumo m3',
+		-- 			'Activo' AS 'Estado'
+		-- 		FROM Propiedad p
+		-- 		WHERE p.id = @inID
+		-- 		FOR JSON PATH,
+		-- 			ROOT('Propiedad')
+		-- 		)
 
-		INSERT Bitacora (
-			idTipoEntidad,
-			idEntidad,
-			jsonAntes,
-			jsonDespues,
-			insertedAt,
-			insertedBy,
-			insertedIn
-			)
-		SELECT te.id,
-			@inID,
-			@jsonAntes,
-			@jsonDespues,
-			GETDATE(),
-			@inUsername,
-			@inIP
-		FROM TipoEntidad te
-		WHERE te.Nombre = 'Propiedad'
+		-- INSERT Bitacora (
+		-- 	idTipoEntidad,
+		-- 	idEntidad,
+		-- 	jsonAntes,
+		-- 	jsonDespues,
+		-- 	insertedAt,
+		-- 	insertedBy,
+		-- 	insertedIn
+		-- 	)
+		-- SELECT te.id,
+		-- 	@inID,
+		-- 	@jsonAntes,
+		-- 	@jsonDespues,
+		-- 	GETDATE(),
+		-- 	@inUsername,
+		-- 	@inIP
+		-- FROM TipoEntidad te
+		-- WHERE te.Nombre = 'Propiedad'
 
 		COMMIT
 

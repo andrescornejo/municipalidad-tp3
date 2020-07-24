@@ -21,15 +21,15 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Propietarios</a>
+                        <a class="dropdown-item" href="crudPropietarios.aspx">Propietarios</a>
                         <a class="dropdown-item" href="crudPropiedades.aspx">Propiedades</a>
                         <a class="dropdown-item" href="crudUsuario.aspx">Usuarios</a>
                     </div>
                 </li>
-                <li class="my-1"><a href="#" class="btn btn-dark btn-lg">Propiedades de un propietario</a></li>
-                <li class="my-1"><a href="#" class="btn btn-dark btn-lg">Propietarios de una propiedad</a></li>
-                <li class="my-1"><a href="#" class="btn btn-dark btn-lg">Propiedades de un usuario</a></li>
-                <li class="my-1"><a href="#" class="btn btn-dark btn-lg">Usuario de una propiedad</a></li>
+                <li class="my-1"><a href="verPropiedadesDePropietario.aspx" class="btn btn-dark btn-lg">Propiedades de un propietario</a></li>
+                <li class="my-1"><a href="verPropietarioDePropiedad.aspx" class="btn btn-dark btn-lg">Propietarios de una propiedad</a></li>
+                <li class="my-1"><a href="verPropiedadesDeUsuario.aspx" class="btn btn-dark btn-lg">Propiedades de un usuario</a></li>
+                <li class="my-1"><a href="verUsuarioDePropiedad.aspx" class="btn btn-dark btn-lg">Usuario de una propiedad</a></li>
                 <li class="my-1"><a href="consultaCambioEntidad.aspx" class="btn btn-dark btn-lg">Cambios a entidades</a></li>
             </ul>
         </div> 
@@ -38,7 +38,7 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand unselectable" href="AdminPage.aspx">Panel de administrador</a>
+    <a class="navbar-brand unselectable" href="AdminPanel.aspx">Panel de administrador</a>
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
             <asp:Button ID="logoutBtn" runat="server" Text="Cerrar sesión" OnClick="logoutBtn_Click" CssClass="btn btn-outline-danger my-2 my-sm-0" type="submit"/>
@@ -46,6 +46,7 @@
     </ul>
   </nav>
 </div>
+
 <div class="container">
     <div id="alertDiv" class="alert alert-success mt-3 hidden" role="alert" runat="server">
         <asp:Label ID="lblAlert" runat="server" Text=""></asp:Label>

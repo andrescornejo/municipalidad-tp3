@@ -15,7 +15,7 @@ FROM openrowset(BULK 'C:\xml\Usuarios.xml', single_blob) AS Usuario(U)
 EXEC sp_xml_preparedocument @hdoc OUT,
 	@UsuarioXML
 
-SELECT @UsuarioXML
+--SELECT @UsuarioXML
 INSERT dbo.Usuario (
 	username,
 	passwd,

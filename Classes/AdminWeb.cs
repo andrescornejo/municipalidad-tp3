@@ -96,7 +96,7 @@ namespace Muni.Classes
         public static void createPropiedad(int numFinca, int valor, string dir, string user, string ip)
         {
             SqlConnection connection = Globals.getConnection();
-            SqlCommand cmd = new SqlCommand("csp_adminAddUser", connection);
+            SqlCommand cmd = new SqlCommand("csp_adminAddPropiedades", connection);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@inputNumFinca", numFinca);
@@ -104,6 +104,23 @@ namespace Muni.Classes
             cmd.Parameters.AddWithValue("@inputDir", dir);
             cmd.Parameters.AddWithValue("@inputInsertedBy", user);
             cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public static void createPropietario(string name, string docid, string tid, string insBy, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminAddPropietario", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inputName", name);
+            cmd.Parameters.AddWithValue("@inputDocIDVal", docid);
+            cmd.Parameters.AddWithValue("@inputDocID", tid);
+            cmd.Parameters.AddWithValue("@inputInsertBy", insBy);
+            cmd.Parameters.AddWithValue("@inputInsertIn", ip);
 
             connection.Open();
             cmd.ExecuteNonQuery();
@@ -137,6 +154,20 @@ namespace Muni.Classes
 
             DataTable datatable = new DataTable();
             SqlDataAdapter sqlda = new SqlDataAdapter("csp_getPropiedades", connection);
+            sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
+
+            connection.Open();
+            sqlda.Fill(datatable);
+            connection.Close();
+
+            return datatable;
+        }
+
+        public static DataTable getPropietarios()
+        {
+            SqlConnection connection = Globals.getConnection();
+            DataTable datatable = new DataTable();
+            SqlDataAdapter sqlda = new SqlDataAdapter("csp_getPropietarios", connection);
             sqlda.SelectCommand.CommandType = CommandType.StoredProcedure;
 
             connection.Open();
@@ -185,6 +216,24 @@ namespace Muni.Classes
             connection.Close();
         }
 
+        public static void updatePropietario(int id, string name, string docid, string tid, string user, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminUpdatePropietario", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inID", id);
+            cmd.Parameters.AddWithValue("@inputName", name);
+            cmd.Parameters.AddWithValue("@inputDocIDVal", docid);
+            cmd.Parameters.AddWithValue("@inputDocID", tid);
+            cmd.Parameters.AddWithValue("@inputInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
+
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
         public static void updateUsuario(int id, string usr, string passwd, bool isAdm, string insBy, string ip)
         {
             SqlConnection connection = Globals.getConnection();
@@ -214,6 +263,21 @@ namespace Muni.Classes
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@inputNumFinca", numFinca);
+            cmd.Parameters.AddWithValue("@inInsertedBy", user);
+            cmd.Parameters.AddWithValue("@inInsertedIn", ip);
+
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public static void deletePropietario(string docid, string user, string ip)
+        {
+            SqlConnection connection = Globals.getConnection();
+            SqlCommand cmd = new SqlCommand("csp_adminDeletePropietario", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@inputDocID", docid);
             cmd.Parameters.AddWithValue("@inputInsertedBy", user);
             cmd.Parameters.AddWithValue("@inputInsertedIn", ip);
 

@@ -4,10 +4,9 @@
 USE municipalidad
 GO
 
-DECLARE @hdoc INT;
 
 SET IDENTITY_INSERT ConceptoCobro ON
-
+DECLARE @hdoc INT;
 DECLARE @ConceptoCobroXML XML;
 
 SELECT @ConceptoCobroXML = C
@@ -94,7 +93,7 @@ FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 	) AS X
 WHERE X.TipoCC = 'CC Fijo'
 
-SELECT *
+/*SELECT *
 FROM ConceptoCobro
 
 SELECT *
@@ -104,7 +103,7 @@ SELECT *
 FROM CC_Porcentaje
 
 SELECT *
-FROM CC_Fijo
+FROM CC_Fijo*/
 
 EXEC sp_xml_removedocument @hdoc
 GO

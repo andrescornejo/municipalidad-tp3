@@ -1,4 +1,4 @@
-## Proyecto de Municipalidad - Parte 3
+## Proyecto de Municipalidad 
 ### Bases de datos I - Primer Semestre 2020
 
 Estudiante: Andrés Cornejo 

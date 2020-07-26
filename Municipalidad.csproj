@@ -93,6 +93,8 @@
     <Content Include="Pages\Admin\crudUsuario.aspx" />
     <Content Include="Pages\Admin\crudTables.aspx" />
     <Content Include="Pages\Client\ClientPanel.aspx" />
+    <Content Include="Pages\Client\ClientPanelUC.ascx" />
+    <Content Include="Pages\Client\consultarRecibosPendientes.aspx" />
     <Content Include="Pages\LoginPage.aspx" />
     <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
@@ -128,6 +130,10 @@
     <Content Include="Content\bootstrap-datepicker3.css.map" />
     <Content Include="Content\bootstrap-datepicker.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker.css.map" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -349,6 +355,20 @@
     <Compile Include="Pages\Client\ClientPanel.aspx.designer.cs">
       <DependentUpon>ClientPanel.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Client\ClientPanelUC.ascx.cs">
+      <DependentUpon>ClientPanelUC.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Client\ClientPanelUC.ascx.designer.cs">
+      <DependentUpon>ClientPanelUC.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Client\consultarRecibosPendientes.aspx.cs">
+      <DependentUpon>consultarRecibosPendientes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Client\consultarRecibosPendientes.aspx.designer.cs">
+      <DependentUpon>consultarRecibosPendientes.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\LoginPage.aspx.cs">
       <DependentUpon>LoginPage.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -389,6 +409,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
  * Stored Procedure: csp_getRecibosPendientes
  * Description: 
  * Author: Pablo Alpizar
+ * Modified by: Andrés Cornejo
  */
 USE municipalidad
 GO
@@ -15,7 +16,8 @@ BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		SELECT @inNumFinca AS [Numero Finca],
+		SELECT
+			@inNumFinca AS [Numero Finca],
 			C.nombre AS [Concepto Cobro],
 			R.fecha AS [Fecha de Emision],
 			R.fechaVencimiento AS [Fecha Vencimiento],
@@ -26,6 +28,7 @@ BEGIN
 		WHERE R.esPendiente = 1
 			AND R.activo = 1
 			AND R.idPropiedad = P.id
+		Order by R.fecha asc
 	END TRY
 
 	BEGIN CATCH

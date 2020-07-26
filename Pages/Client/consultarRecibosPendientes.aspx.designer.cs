@@ -11,17 +11,17 @@ namespace Muni.Pages.Client
 {
 
 
-    public partial class ClientPanel
+    public partial class consultarRecibosPendientes
     {
 
         /// <summary>
-        /// clientPanelForm control.
+        /// consultaReciboPenForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm clientPanelForm;
+        protected global::System.Web.UI.HtmlControls.HtmlForm consultaReciboPenForm;
 
         /// <summary>
         /// ClientPanelUC control.
@@ -42,40 +42,31 @@ namespace Muni.Pages.Client
         protected global::System.Web.UI.WebControls.Label welcomeLbl;
 
         /// <summary>
-        /// propidTB control.
+        /// lblLead control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox propidTB;
+        protected global::System.Web.UI.WebControls.Label lblLead;
 
         /// <summary>
-        /// verRecPenBtn control.
+        /// btnCancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button verRecPenBtn;
+        protected global::System.Web.UI.WebControls.Button btnCancel;
 
         /// <summary>
-        /// btnVerRecPagados control.
+        /// btnPay control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnVerRecPagados;
-
-        /// <summary>
-        /// btnVerCompobantes control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnVerCompobantes;
+        protected global::System.Web.UI.WebControls.Button btnPay;
 
         /// <summary>
         /// gridView control.
@@ -85,41 +76,5 @@ namespace Muni.Pages.Client
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gridView;
-
-        /// <summary>
-        /// upModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upModal;
-
-        /// <summary>
-        /// lblModalTitle control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblModalTitle;
-
-        /// <summary>
-        /// lblModalBody control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblModalBody;
-
-        /// <summary>
-        /// gridModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gridModal;
     }
 }

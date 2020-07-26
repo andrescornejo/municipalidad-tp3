@@ -1,13 +1,8 @@
-﻿using Muni.Properties;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Web;
-using System.Web.UI.WebControls;
 
 namespace Muni.Classes
 {
@@ -16,10 +11,11 @@ namespace Muni.Classes
         #region LoginMethods
         //TODO
         //Login info will be stored here. Not really safe, but safety doesn't matter in this case.
+        //These are temporary values, that are set for testing purposes.
         private static string cURRENTUSER = "b"; //""
         private static bool iSADMIN = false;
         private static int uSERID = 2; //-1
-        private static string cURRENTIP = "MOTHERRUSSIA";
+        private static string cURRENTIP = "MOTHERRUSSIA";//""
 
         public static string CURRENTPANEL = "create"; //Can be set to create, update, or delete.
 
@@ -114,7 +110,7 @@ namespace Muni.Classes
         #region DatabaseMethods
         //The connection string is stored here.
 
-        public static string CONNECTIONSTRING = Properties.Resources.CONNECTIONSTRING;
+        public static string CONNECTIONSTRING = @"Data Source=HUSTLEBONES\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True";
 
         public static SqlConnection getConnection()
         {

@@ -106,7 +106,12 @@ insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVenci
 select 11, 1, 1, '2020-6-8', '2020-6-17', 50000, 0, 1
 
 insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVencimiento, monto, esPendiente, activo)
-select 12, 1, 1, '2020-7-10', '2020-7-17', 50000, 1, 1
+values	(12, 1, 1, '2020-7-10', '2020-7-17', 50000, 1, 1),
+		(null, 1, 1, '2020-7-12', '2020-7-19', 50000, 1, 1),
+		(null, 1, 1, '2020-7-14', '2020-7-19', 50000, 1, 1),
+		(null, 1, 1, '2020-7-16', '2020-7-19', 50000, 1, 1),
+		(null, 1, 1, '2020-7-18', '2020-7-20', 50000, 1, 1),
+		(null, 1, 1, '2020-7-20', '2020-7-22', 50000, 1, 1)
 
 select * from Recibo
 

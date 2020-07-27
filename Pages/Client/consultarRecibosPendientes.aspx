@@ -7,7 +7,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Recibos Pendientes</title>
 </head>
 <body>
     <form id="consultaReciboPenForm" runat="server">
@@ -25,11 +25,15 @@
                 <hr class="my-4"/>
                 <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false">
                     <Columns>
-                        <asp:TemplateField HeaderText="">
-                            <ItemTemplate>
-                                <asp:CheckBox id="cbRowSelect" runat="server"/>
-                            </ItemTemplate>
+                        <asp:TemplateField HeaderText="">  
+                            <EditItemTemplate>  
+                                <asp:CheckBox ID="cbGv" runat="server" />  
+                            </EditItemTemplate>  
+                            <ItemTemplate>  
+                                <asp:CheckBox ID="cbGv" runat="server" />  
+                            </ItemTemplate>  
                         </asp:TemplateField>
+                        <asp:BoundField DataField="id" HeaderText="id" />
                         <asp:BoundField DataField="Numero Finca" HeaderText="# Propiedad" />
                         <asp:BoundField DataField="Concepto Cobro" HeaderText="Concepto de cobro" />
                         <asp:BoundField DataField="Fecha de Emision" HeaderText="Fecha de emisión" />
@@ -37,6 +41,7 @@
                         <asp:BoundField DataField="Monto Total" HeaderText="Monto total" />
                     </Columns>
                 </asp:GridView>
+                <asp:GridView ID="g2" runat="server" AutoGenerateColumns="true"></asp:GridView>
             </div>
         </div>
     </form>

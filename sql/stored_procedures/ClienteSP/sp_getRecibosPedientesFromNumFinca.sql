@@ -17,6 +17,7 @@ BEGIN
 		SET NOCOUNT ON
 
 		SELECT
+			R.id as [id],
 			@inNumFinca AS [Numero Finca],
 			C.nombre AS [Concepto Cobro],
 			R.fecha AS [Fecha de Emision],

@@ -8,6 +8,16 @@ namespace Muni.Classes
 {
     public static class Globals
     {
+
+        //The connection string is stored here.
+
+        public static string CONNECTIONSTRING = @"Data Source=HUSTLEBONES\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True";
+
+        public static SqlConnection getConnection()
+        {
+            return new SqlConnection(CONNECTIONSTRING);
+        }
+
         #region LoginMethods
         //TODO
         //Login info will be stored here. Not really safe, but safety doesn't matter in this case.
@@ -108,14 +118,7 @@ namespace Muni.Classes
         #endregion
 
         #region DatabaseMethods
-        //The connection string is stored here.
 
-        public static string CONNECTIONSTRING = @"Data Source=HUSTLEBONES\SQLEXPRESS;Initial Catalog=municipalidad;Integrated Security=True";
-
-        public static SqlConnection getConnection()
-        {
-            return new SqlConnection(CONNECTIONSTRING);
-        }
 
         
 

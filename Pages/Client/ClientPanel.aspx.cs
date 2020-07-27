@@ -15,8 +15,12 @@ namespace Muni.Pages.Client
         protected void Page_Load(object sender, EventArgs e)
         {
             this.welcomeLbl.Text = "Bienvenido, " + Globals.CURRENTUSER + ".";
-            this.gridView.DataSource = Cliente.getClientProperties(Globals.CURRENTUSER);
-            this.gridView.DataBind();
+            if (!Page.IsPostBack)
+            {
+                //Button inside grid triggers full postback, hence why this code is checked for !IsPostBack.
+                this.gridView.DataSource = Cliente.getClientProperties(Globals.CURRENTUSER);
+                this.gridView.DataBind();
+            }
         }
 
         private void setPropID(int propID)
@@ -32,13 +36,21 @@ namespace Muni.Pages.Client
             lblModalBody.Text = "";
         }
 
-        protected void OnSelectedIndexChanged(object sender, EventArgs e)
+        protected void gridProp_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            //Accessing BoundField Column.
-            string name = gridView.SelectedRow.Cells[1].Text;
+            if (e.CommandName == "Select")
+            {
+                //Determine the RowIndex of the Row whose Button was clicked.
+                //int rowIndex = Convert.ToInt32(e.CommandArgument);
+                ////Reference the GridView Row.
+                //GridViewRow row = gridView.Rows[rowIndex];
+                ////Get the values.
 
-            this.propidTB.Text = name;
+                //string name = row.Cells[1].Text;
+                this.propidTB.Text = e.CommandArgument.ToString();
+            }
         }
+
         protected void verRecPenBtn_Click(object sender, EventArgs e)
         {
             int propID;

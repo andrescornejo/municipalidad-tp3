@@ -30,10 +30,15 @@
             <asp:Button ID="btnVerCompobantes" runat="server" Text="Ver comprobantes de pago" CssClass="btn btn-primary btn-lg" OnClick="btnVerCompobantes_Click"/>
 
             <hr class="my-4"/>
-            <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged = "OnSelectedIndexChanged">
+            <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark h5" AutoGenerateColumns="false" OnRowCommand="gridProp_RowCommand">
                 <Columns>
-                    <asp:ButtonField Text="Seleccionar Propiedad" CommandName="Select" ItemStyle-Width="100"/>
-                    <asp:BoundField DataField="# Propiedad" HeaderText="# Propiedad" />
+                    <asp:TemplateField ShowHeader="False" ItemStyle-Width="130">
+                        <ItemTemplate>
+                            <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Select"
+                                Text="Seleccionar" CommandArgument='<%# Eval("# Propiedad") %>' CssClass="btn btn-info btn-lg"/>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:BoundField DataField="# Propiedad" HeaderText="# Propiedad"/>
                     <asp:BoundField DataField="Valor" HeaderText="Valor" />
                     <asp:BoundField DataField="Direccion" HeaderText="Dirección" />
                 </Columns>

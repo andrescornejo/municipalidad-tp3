@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="consultarRecibosPendientes.aspx.cs" Inherits="Muni.Pages.Client.consultarRecibosPendientes" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="consultarComprobantes.aspx.cs" Inherits="Muni.Pages.Client.consultarComprobantes" %>
 
 <%@ Register Src="~/Pages/Client/ClientPanelUC.ascx" TagPrefix="uc1" TagName="ClientPanelUC" %>
 
@@ -7,31 +7,31 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Recibos Pendientes</title>
+    <title>Consulta de Comprobantes</title>
 </head>
 <body>
-    <form id="consultaReciboPenForm" runat="server">
+    <form id="consultarComprobantesForm" runat="server">
         <uc1:ClientPanelUC runat="server" ID="ClientPanelUC" />
+        
+        <div>
+            <asp:Button ID="btnBack" CssClass="btn btn-secondary btn-lg" OnClick="btnBack_Click" Text="Volver" runat="server" />
+        </div>
         <div class="container">
             <div class="jumbotron">
                 <asp:Label ID="welcomeLbl" CssClass="display-4" runat="server" Text="Placeholder text"></asp:Label>
                 <div class="py-3">
                     <asp:Label ID="lblLead" CssClass="lead" runat="server" >Placeholder text</asp:Label>
                 </div>
-                    <asp:Button ID="btnBack" CssClass="btn btn-secondary btn-lg" OnClick="btnBack_Click" Text="Volver" runat="server" />
-                    <asp:Button ID="btnConsult" CssClass="btn btn-primary btn-lg" OnClick="btnConsult_Click" Text="Consultar recibos" runat="server" />
                 <br/>
 
                 <hr class="my-4"/>
                 <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false">
                     <Columns>
-                        <asp:TemplateField HeaderText="">  
-                            <EditItemTemplate>  
-                                <asp:CheckBox ID="cbGv" runat="server" />  
-                            </EditItemTemplate>  
-                            <ItemTemplate>  
-                                <asp:CheckBox ID="cbGv" runat="server" />  
-                            </ItemTemplate>  
+                        <asp:TemplateField ShowHeader="False" ItemStyle-Width="130">
+                            <ItemTemplate>
+                                <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Select"
+                                    Text="Seleccionar" CommandArgument='' CssClass="btn btn-info btn-lg"/>
+                            </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="id" HeaderText="id" />
                         <asp:BoundField DataField="Numero Finca" HeaderText="# Propiedad" />
@@ -41,7 +41,6 @@
                         <asp:BoundField DataField="Monto Total" HeaderText="Monto total" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="g2" runat="server" AutoGenerateColumns="true"></asp:GridView>
             </div>
         </div>
 
@@ -53,6 +52,9 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title"><asp:Label ID="lblModalTitle" runat="server" Text=""></asp:Label></h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
                         <div class="modal-body">
                             <asp:Label ID="lblModalBody" runat="server" CssClass="lead" Text=""></asp:Label>
@@ -62,9 +64,7 @@
                             <asp:Label ID="lblModalTotal" runat="server" CssClass="lead" Text=""></asp:Label>
                         </div>
                         <div class="modal-footer">
-                            <asp:Button ID="btnCancel" CssClass="btn btn-danger btn-lg" OnClick="btnCancel_Click" Text="Cancelar" runat="server" />
-                            <asp:Button ID="btnPay" CssClass="btn btn-primary btn-lg" OnClick="btnPay_Click" Text="Pagar recibos" runat="server" />
-
+                            <asp:Button ID="btnCancel" CssClass="btn btn-danger btn-lg" OnClick="btnCancel_Click" Text="Volver" runat="server" />
                         </div>
                     </div>
                 </ContentTemplate>

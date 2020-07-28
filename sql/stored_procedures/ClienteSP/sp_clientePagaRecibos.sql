@@ -2,43 +2,109 @@
  * Stored Procedure: csp_clientePagaRecibos
  * Description: Stored procedure that handes the table a client sends when he/she pays bills. 
  * Author: Andres Cornejo
+ * Modified by: Pablo Alpizar
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_clientePagaRecibos @inTablaRecibos udt_Recibo readonly as
-begin
-	begin try
-		set nocount on
+ALTER PROC csp_clientePagaRecibos @inTablaRecibos udt_Recibo readonly
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-        declare @idTable table(ID int)
+		DECLARE @idTable TABLE (ID INT)
+		DECLARE @ID INT,
+			@idComprobante INT,
+			@idPropiedad INT,
+			@date DATE
 
-        Declare @ID int
+		-- Insertar los id de los recibos a pagar en una tabla para iterar
+		INSERT @idTable
+		SELECT i.id
+		FROM @inTablaRecibos i
 
-        insert @idTable
-        select i.id
-        from @inTablaRecibos i
-        /*Cree una tabla temporal para poder iterar, ya que no puedo
-        * borrar de @inTablaRecibos, porque SQL me está forzando a 
-        * declara @inTablaRecibos como readonly.
-        */
-        WHILE EXISTS(SELECT * FROM @idTable)
-        BEGIN
-        Select Top 1 @ID = ID From @idTable
+		-- Crear el comprobante de pago
+		INSERT INTO [dbo].[ComprobanteDePago] (
+			fecha,
+			MontoTotal,
+			activo
+			)
+		SELECT GETDATE(),
+			0,
+			1
 
-        update Recibo
-        set monto = 666,
-        esPendiente = 0
-        where Recibo.id = @ID
+		-- Guardar el id del comprobante
+		SET @idComprobante = (
+				SELECT TOP (1) CP.id
+				FROM [dbo].[ComprobanteDePago] CP
+				ORDER BY CP.id DESC
+				)
+				
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		BEGIN TRANSACTION
 
-        delete @idTable
-        where ID=@ID 
+			/*Cree una tabla temporal para poder iterar, ya que no puedo
+        	* borrar de @inTablaRecibos, porque SQL me está forzando a 
+        	* declara @inTablaRecibos como readonly.
+        	*/
+			WHILE EXISTS (
+					SELECT *
+					FROM @idTable
+					)
+			BEGIN
+				SELECT TOP 1 @ID = ID
+				FROM @idTable
 
-        end
+				DELETE @idTable
+				WHERE ID = @ID
 
-	end try
-	begin catch
+				-- Actualizar los de estado y idComprobante del recibo 
+				UPDATE [dbo].[Recibo]
+				SET idTipoEstado = (
+						SELECT T.id
+						FROM [dbo].[TipoEstadoRecibo] T
+						WHERE T.estado = 'Pagado'
+						),
+					idComprobantePago = @idComprobante
+				WHERE id = @ID
+
+				-- Actualizar el valor del comprobante
+				UPDATE [dbo].[ComprobanteDePago]
+				SET MontoTotal = MontoTotal + (
+						SELECT R.monto
+						FROM [dbo].[Recibo] R
+						WHERE R.id = @ID
+						)
+				WHERE id = @idComprobante
+
+				-- Si el recibo es de reconexión entonces se genera la orden de reconexión a la propiedad
+				IF EXISTS (
+						SELECT RE.id
+						FROM [dbo].[Reconexion] RE
+						WHERE RE.id = @ID
+						)
+				BEGIN
+					SET @idPropiedad = (
+							SELECT R.idPropiedad
+							FROM [dbo].[Recibo] R
+							WHERE R.id = @ID
+							)
+					SET @date = GETDATE()
+
+					EXEC csp_generarOrdReconexion @date,
+						@idPropiedad,
+						@ID
+				END
+			END
+		COMMIT
+		RETURN 1
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -49,7 +115,6 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
-
-go
+	END CATCH
+END
+GO

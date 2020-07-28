@@ -109,20 +109,21 @@ BEGIN
 			INSERT INTO [dbo].[Recibo] (
 				idPropiedad,
 				idConceptoCobro,
+				idTipoEstado,
 				fecha,
 				fechaVencimiento,
 				monto,
-				esPendiente,
 				activo
 				)
 			SELECT tmpR.idPropiedad,
 				tmpR.idConceptoCobro,
+				T.id,
 				@inFecha,
 				DATEADD(DAY, @QDias, @inFecha),
 				tmpR.Monto,
-				1,
 				1
 			FROM @tmpRecibos tmpR
+			INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
 
 			COMMIT
 			RETURN 1

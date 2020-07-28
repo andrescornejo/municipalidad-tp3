@@ -10,6 +10,10 @@
 *.map
 *.ts
 
+#removes folders added by ionide extension
+.ionide/
+sql/.ionide
+
 # User-specific files
 *.rsuser
 *.suo

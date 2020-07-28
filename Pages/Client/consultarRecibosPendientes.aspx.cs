@@ -1,4 +1,5 @@
-﻿using Muni.Classes;
+﻿using Microsoft.SqlServer.Server;
+using Muni.Classes;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,7 +17,13 @@ namespace Muni.Pages.Client
         int currentProp;
         protected void Page_Load(object sender, EventArgs e)
         {
+            //This is needed to make the buttons inside the modal work beyond opening and closing said modal.
+            ScriptManager scriptManager = ScriptManager.GetCurrent(this.Page);
+            scriptManager.RegisterPostBackControl(this.btnPay);
+            scriptManager.RegisterPostBackControl(this.btnCancel);
+            //Maintain the current propery every time the page is loaded.
             currentProp = Cliente.CURRENTPROPERTY;
+            //Only reload the labels and the gridview if the type off callback recieved is not postback.
             if (!Page.IsPostBack)
             {
                 welcomeLbl.Text = "Recibos pendientes de la propiedad: " + currentProp;
@@ -25,79 +32,48 @@ namespace Muni.Pages.Client
 
         }
 
-        protected void reloadGridView()
+        #region ButtonEvents
+
+        protected void btnBack_Click(object sender, EventArgs e)
         {
-            btnPay.Visible = false;
-            DataTable table = Cliente.getRecibosPendientes(currentProp);
-            if (table != null && table.Rows.Count > 0)
-            {
-                gridView.Visible = true;
-                btnPay.Visible = true;
-                lblLead.Text = "Seleccione los recibos que desea pagar";
-                gridView.DataSource = table;
-                gridView.DataBind();
-                setIDVisibility(false);
-            }
-            else {
-                lblLead.Text = "Esta propiedad no tiene recibos pendientes.";
-                gridView.Visible = false;
-            }
+            Cliente.clearCurrentProperty();
+            Response.Redirect("ClientPanel.aspx");
+        }
+
+        protected void btnConsult_Click(object sender, EventArgs e)
+        {
+            clearModal();
+            lblModalTitle.Text = "Pago de recibos pendientes";
+            lblModalBody.Text = "Recibos pendientes de la propiedad: " + currentProp;
+
+            this.gridModal.DataSource = Cliente.getRecibosPendientes(Cliente.CURRENTPROPERTY);
+            this.gridModal.DataBind();
+
+            setModalVisibility("myModal", true);
+            upModal.Update();
         }
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            Cliente.clearCurrentProperty();
-            Response.Redirect("ClientPanel.aspx");
+            setModalVisibility("myModal", false);
+            MessageBox.Show("Pago de recibos abortado.");
         }
 
         protected void btnPay_Click(object sender, EventArgs e)
         {
             DataTable selectedData = getGridData();
             processPayment(selectedData);
+            reloadGridView();
 
             //For debugging purposes.
             //g2.DataSource = selectedData;
             //g2.DataBind();
+            setModalVisibility("myModal", false);
         }
 
-        protected DataTable getGridData()
-        {
-            setIDVisibility(true);
-            DataTable dt = new DataTable();
-            //i starts in 1 to omit the checkbox column
-            for (int i = 1; i < gridView.Columns.Count; i++)
-            {
-                dt.Columns.Add("column" + i.ToString());
-            }
-            foreach (GridViewRow row in gridView.Rows)
-            {
-                var checkbox = row.FindControl("cbGv") as CheckBox;
-                if (checkbox.Checked)
-                {
-                    DataRow dr = dt.NewRow();
-                    for (int j = 1; j < gridView.Columns.Count; j++)
-                    {
-                        dr["column" + j.ToString()] = row.Cells[j].Text;
-                    }
+        #endregion
 
-                    dt.Rows.Add(dr);
-                }
-            }
-            prepareTable(dt);
-            return dt;
-        }
-
-        //This function ensured that you cant pay newer receipts if old ones arent payed yet.
-        protected bool validateReceiptOrder(DataTable newDT)
-        {
-            DataTable oldDT = Cliente.getRecibosPendientes(currentProp);
-            for (int i = 0; i < newDT.Rows.Count; i++)
-            {
-                if (oldDT.Rows[i][0].ToString() != newDT.Rows[i][0].ToString())
-                    return false;
-            }
-            return true;
-        }
+        #region PaymentLogic
 
         protected void processPayment(DataTable inputTable)
         {
@@ -110,7 +86,6 @@ namespace Muni.Pages.Client
             else if (validationStatus)
             {
                 excecutePayment(inputTable);
-                reloadGridView();
                 MessageBox.Show("Recibos pagados exitosamente.");
             }
             else if (!validationStatus)
@@ -147,10 +122,119 @@ namespace Muni.Pages.Client
             }
         }
 
+        #endregion
+
+        #region DataManagingFunctions
+
+        protected DataTable getGridData()
+        {
+            setIDVisibility(true);
+            DataTable dt = new DataTable();
+            //i starts in 1 to omit the checkbox column
+            for (int i = 1; i < gridView.Columns.Count; i++)
+            {
+                dt.Columns.Add("column" + i.ToString());
+            }
+            foreach (GridViewRow row in gridView.Rows)
+            {
+                var checkbox = row.FindControl("cbGv") as CheckBox;
+                if (checkbox.Checked)
+                {
+                    DataRow dr = dt.NewRow();
+                    for (int j = 1; j < gridView.Columns.Count; j++)
+                    {
+                        dr["column" + j.ToString()] = row.Cells[j].Text;
+                    }
+
+                    dt.Rows.Add(dr);
+                }
+            }
+            prepareTable(dt);
+            return dt;
+        }
+
+        //Renames the columns of the table so they can be sent and understood by the database.
+        protected void prepareTable(DataTable input)
+        {
+            input.Columns["column1"].ColumnName = "id";
+            input.Columns["column2"].ColumnName = "numPropiedad";
+            input.Columns["column3"].ColumnName = "conceptoCobro";
+            input.Columns["column4"].ColumnName = "fecha";
+            input.Columns["column5"].ColumnName = "fechaVence";
+            input.Columns["column6"].ColumnName = "montoTotal";
+        }
+
+        #endregion
+
+        #region LayoutChangingFunctions
+
+        protected void reloadGridView()
+        {
+            btnConsult.Visible = false;
+            DataTable table = Cliente.getRecibosPendientes(currentProp);
+            if (table != null && table.Rows.Count > 0)
+            {
+                gridView.Visible = true;
+                btnConsult.Visible = true;
+                lblLead.Text = "Seleccione los recibos que desea pagar";
+                gridView.DataSource = table;
+                gridView.DataBind();
+                setIDVisibility(false);
+            }
+            else
+            {
+                lblLead.Text = "Esta propiedad no tiene recibos pendientes.";
+                gridView.Visible = false;
+            }
+        }
 
         protected void setIDVisibility(bool val)
         {
             gridView.Columns[1].Visible = val;
+        }
+
+        protected void setModalVisibility(string modalName, bool input)
+        {   if(input)
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), modalName, "$('#" + modalName + "').modal();", true);
+            else
+                ScriptManager.RegisterStartupScript(this.Page, this.Page.GetType(), "Pop", "$('#"+modalName+"').modal('hide');", true);
+        }
+
+        protected void clearModal()
+        {
+            gridModal.DataSource = null;
+            gridModal.DataBind();
+            lblModalTitle.Text = "";
+            lblModalBody.Text = "";
+        }
+
+        private void clearTable(DataTable table)
+        {
+            try
+            {
+                table.Clear();
+            }
+            catch (DataException e)
+            {
+                // Process exception and return.
+                Console.WriteLine("Exception of type {0} occurred.",
+                    e.GetType());
+            }
+        }
+        #endregion
+
+        #region ValidationFunctions
+
+        //This function ensured that you cant pay newer receipts if old ones arent payed yet.
+        protected bool validateReceiptOrder(DataTable newDT)
+        {
+            DataTable oldDT = Cliente.getRecibosPendientes(currentProp);
+            for (int i = 0; i < newDT.Rows.Count; i++)
+            {
+                if (oldDT.Rows[i][0].ToString() != newDT.Rows[i][0].ToString())
+                    return false;
+            }
+            return true;
         }
 
         //Function that returns true if all checkboxes are empty.
@@ -168,29 +252,6 @@ namespace Muni.Pages.Client
             return true;
         }
 
-        //Renames the columns of the table so they can be sent and understood by the database.
-        protected void prepareTable(DataTable input)
-        {
-            input.Columns["column1"].ColumnName = "id";
-            input.Columns["column2"].ColumnName = "numPropiedad";
-            input.Columns["column3"].ColumnName = "conceptoCobro";
-            input.Columns["column4"].ColumnName = "fecha";
-            input.Columns["column5"].ColumnName = "fechaVence";
-            input.Columns["column6"].ColumnName = "montoTotal";
-        }
-
-        private void clearTable(DataTable table)
-        {
-            try
-            {
-                table.Clear();
-            }
-            catch (DataException e)
-            {
-                // Process exception and return.
-                Console.WriteLine("Exception of type {0} occurred.",
-                    e.GetType());
-            }
-        }
+        #endregion
     }
 }

@@ -44,22 +44,23 @@ BEGIN
 				INSERT INTO [dbo].[Recibo] (
 					idPropiedad,
 					idConceptoCobro,
+					idTipoEstado,
 					fecha,
 					fechaVencimiento,
 					monto,
-					esPendiente,
 					Activo
 					)
 				SELECT tmp.idPropiedad,
 					@idCC,
+					T.id,
 					@inFecha,
 					DATEADD(DAY, CC.QDiasVencimiento, @inFecha),
 					CF.Monto,
-					1,
 					1
 				FROM @tmpPropiedadesTipoCC tmp
 				INNER JOIN [dbo].[ConceptoCobro] CC ON @idCC = CC.id
 				INNER JOIN [dbo].[CC_Fijo] CF ON @idCC = CF.id
+				INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
 			END
 		END
 	END TRY

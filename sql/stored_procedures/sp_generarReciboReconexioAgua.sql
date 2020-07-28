@@ -19,22 +19,23 @@ BEGIN
 		INSERT INTO [dbo].[Recibo] (
 			idPropiedad,
 			idConceptoCobro,
+			idTipoEstado,
 			fecha,
 			fechaVencimiento,
 			monto,
-			esPendiente,
 			activo
 			)
 		SELECT 
 			@inIdPropiedad,
 			C.id,
+			T.id,
 			@inFecha,
 			@inFecha,
 			CF.Monto,
-			0,
 			1
 		FROM [dbo].[ConceptoCobro] C
 		INNER JOIN [dbo].[CC_Fijo] CF ON C.id = CF.id
+		INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
 		WHERE C.nombre = 'Reconexion de agua'
 	END TRY
 

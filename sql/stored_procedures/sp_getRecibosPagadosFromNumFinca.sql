@@ -24,7 +24,11 @@ BEGIN
 		FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[ConceptoCobro] C ON R.idConceptoCobro = C.id
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
-		WHERE R.esPendiente = 0
+		WHERE R.idTipoEstado = (
+			SELECT T.id 
+			FROM [dbo].[TipoEstadoRecibo] T
+			WHERE T.estado = 'Pagado'
+		)
 			AND R.activo = 1
 			AND R.idPropiedad = P.id
 	END TRY

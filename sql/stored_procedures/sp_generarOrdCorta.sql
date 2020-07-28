@@ -21,8 +21,11 @@ BEGIN
 		INSERT INTO @tmpRecibosPedientes (idPropiedad)
 		SELECT R.idPropiedad
 		FROM [dbo].[Recibo] R
-		WHERE R.idConceptoCobro = 1 AND R.esPendiente = 1
-
+		WHERE R.idConceptoCobro = 1 AND R.idTipoEstado = (
+			SELECT T.id 
+			FROM [dbo].[TipoEstadoRecibo] T
+			WHERE T.estado = 'Pediente' 
+		)
 		WHILE (
 				SELECT COUNT(*)
 				FROM @tmpRecibosPedientes
@@ -34,27 +37,34 @@ BEGIN
 					FROM @tmpRecibosPedientes tmp
 			)
 			IF ((SELECT COUNT(tmp.idPropiedad) FROM @tmpRecibosPedientes tmp WHERE tmp.idPropiedad = @idPropiedad) > 1
-				AND (SELECT COUNT(R.id) FROM [dbo].[Recibo] R WHERE R.idConceptoCobro = 10 AND R.idPropiedad = @idPropiedad AND R.esPendiente = 1) = 0)
+				AND (SELECT COUNT(R.id) FROM [dbo].[Recibo] R WHERE R.idConceptoCobro = 10 AND 
+					R.idPropiedad = @idPropiedad AND 
+						R.idTipoEstado = (
+						SELECT T.id 
+						FROM [dbo].[TipoEstadoRecibo] T
+						WHERE T.estado = 'Pediente' )
+					) = 0)
 			BEGIN
 				-- Recibo de reconexion
 				INSERT INTO [dbo].[Recibo] (
 					idPropiedad, 
-					idConceptoCobro, 
+					idConceptoCobro,
+					idTipoEstado,
 					fecha,
 					fechaVencimiento,
 					monto,
-					esPendiente,
 					activo)
 				SELECT 
 					@idPropiedad,
 					C.id,
+					T.id,
 					@inFecha,
 					DATEADD(DAY,C.QDiasVencimiento,@inFecha),
 					CF.monto,
-					1,
 					1
 				FROM [dbo].[ConceptoCobro] C 
 				INNER JOIN [dbo].[CC_Fijo] CF ON C.id = CF.id
+				INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
 				WHERE C.nombre = 'Reconexion de agua'
 
 				INSERT INTO [dbo].[Reconexion] (id,activo)

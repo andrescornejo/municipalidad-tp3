@@ -9,6 +9,7 @@
 *.css
 *.map
 *.ts
+*.flow
 
 #removes folders added by ionide extension
 .ionide/

@@ -9,7 +9,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_crearRecibosInteres @inTableIdRecibos INT, @outTableRecibosInteres OUTPUT
+ALTER PROC csp_crearRecibosInteres @inTableIdRecibos INT, @outMontoTotal money OUTPUT
 AS
 BEGIN
 	BEGIN TRY
@@ -29,7 +29,7 @@ BEGIN
             fecha DATE,
             fechaVencimiento DATE,
             monto MONEY,
-            esPendiente BIT,
+			idTipoEstado int,
             activo BIT
         )
 		DECLARE @MontoRecibo MONEY
@@ -78,7 +78,7 @@ BEGIN
                     fecha,
                     fechaVencimiento,
                     monto,
-                    esPendiente,
+					idTipoEstado,
                     activo
                 )
                 SELECT R.id,
@@ -104,7 +104,7 @@ BEGIN
                 fecha,
                 fechaVencimiento,
                 monto,
-                esPendiente,
+				idTipoEstado,
                 activo    
             )
             SELECT tmp.idPropiedad,
@@ -112,7 +112,7 @@ BEGIN
                 tmp.fecha,
                 tmp.fechaVencimiento,
                 tmp.monto,
-                tmp.esPendiente,
+				tmp.idTipoEstado,
                 tmp.activo
             FROM @tmpRecibosInt tmp
         COMMIT

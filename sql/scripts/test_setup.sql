@@ -2,7 +2,243 @@ use municipalidad
 go 
 
 set nocount on
+--DELETE ALL TABLES
+-- disable referential integrity
+EXEC sp_MSForEachTable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL' 
+GO 
 
+EXEC sp_MSForEachTable 'DELETE FROM ?' 
+GO 
+
+EXEC sp_MSForEachTable 'DBCC CHECKIDENT(''?'', RESEED, 0)'
+GO
+
+-- enable referential integrity again 
+EXEC sp_MSForEachTable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL' 
+GO
+
+--INSERT TIPODOCID CATALOG TABLE
+DECLARE @hdoc INT;
+
+SET IDENTITY_INSERT TipoDocID ON
+
+DECLARE @TipoDocIDXML XML;
+
+SELECT @TipoDocIDXML = T
+FROM openrowset(BULK 'C:\xml\TipoDocumentoIdentidad.xml', single_blob) AS TipoDocID(T)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@TipoDocIDXML
+
+INSERT dbo.TipoDocID (
+	id,
+	nombre,
+	activo
+	)
+SELECT codigoDoc,
+	descripcion,
+	1
+FROM openxml(@hdoc, '/TipoDocIdentidad/TipoDocId', 1) WITH (
+		codigoDoc INT,
+		descripcion NVARCHAR(MAX)
+		)
+SELECT *
+FROM TipoDocID
+
+EXEC sp_xml_removedocument @hdoc
+GO
+
+--INSERT TIPO ESTADO CATALOG TABLE
+DECLARE @hdoc INT;
+SET IDENTITY_INSERT TipoEstadoRecibo ON
+
+DECLARE @TipoEstadoXML XML;
+
+SELECT @TipoEstadoXML = T
+FROM openrowset(BULK 'C:\xml\TipoEstado.xml', single_blob) AS TipoEstado(T)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@TipoEstadoXML
+
+INSERT [dbo].[TipoEstadoRecibo] (
+    id,
+	Estado,
+	activo
+	)
+SELECT X.id,
+	X.Nombre,
+	1
+FROM openxml(@hdoc, '/TipoEstado/Estado', 1) WITH (
+		id INT,
+		Nombre NVARCHAR(25)
+		) AS X
+
+SELECT *
+FROM TipoEstadoRecibo
+
+EXEC sp_xml_removedocument @hdoc
+
+SET IDENTITY_INSERT TipoEstadoRecibo OFF
+GO
+
+--INSERT CONCEPTO COBRO CATALOG TABLE
+SET IDENTITY_INSERT ConceptoCobro ON
+DECLARE @hdoc INT;
+DECLARE @ConceptoCobroXML XML;
+
+SELECT @ConceptoCobroXML = C
+FROM openrowset(BULK 'C:\xml\ConceptoDeCobro.xml', single_blob) AS ConceptoCobro(C)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@ConceptoCobroXML
+
+INSERT dbo.ConceptoCobro (
+	id,
+	nombre,
+	TasaInteresesMoratorios,
+	DiaEmisionRecibo,
+	QDiasVencimiento,
+	EsRecurrente,
+	EsFijo,
+	EsImpuesto,
+	activo
+	)
+SELECT X.id,
+	X.Nombre,
+	X.TasaInteresMoratoria,
+	X.DiaCobro,
+	X.QDiasVencimiento,
+	X.EsRecurrente,
+	X.EsFijo,
+	X.EsImpuesto,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
+		id INT,
+		Nombre NVARCHAR(MAX),
+		TasaInteresMoratoria REAL,
+		DiaCobro INT,
+		QDiasVencimiento INT,
+		EsRecurrente BIT,
+		EsFijo BIT,
+		EsImpuesto BIT
+		) AS X
+
+INSERT dbo.CC_ConsumoAgua (
+	id,
+	ValorM3,
+	MontoMinimo,
+	activo
+	)
+SELECT X.id,
+	X.ValorM3,
+	X.MontoMinRecibo,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
+		id INT,
+		ValorM3 MONEY,
+		MontoMinRecibo MONEY,
+		TipoCC NVARCHAR(10)
+		) AS X
+WHERE X.TipoCC = 'CC Consumo'
+
+INSERT dbo.CC_Porcentaje (
+	id,
+	ValorPorcentaje,
+	activo)
+SELECT X.id,
+	X.ValorPorcentaje,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
+		id INT,
+		ValorPorcentaje FLOAT,
+		TipoCC NVARCHAR(13)
+		) AS X
+WHERE X.TipoCC = 'CC Porcentaje'
+
+INSERT dbo.CC_Fijo (
+	id,
+	Monto,
+	activo
+	)
+SELECT X.id,
+	X.Monto,
+	1
+FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
+	id INT,
+	Monto MONEY,
+	TipoCC NVARCHAR(7)
+	) AS X
+WHERE X.TipoCC = 'CC Fijo'
+
+EXEC sp_xml_removedocument @hdoc
+GO
+
+--INSERT TIPO ENTIDAD CATALOG TABLE
+DECLARE @hdoc INT;
+SET IDENTITY_INSERT TipoEntidad ON
+
+DECLARE @TipoEntidadXML XML;
+
+SELECT @TipoEntidadXML = T
+FROM openrowset(BULK 'C:\xml\TipoEntidad.xml', single_blob) AS TipoEntidad(T)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@TipoEntidadXML
+
+INSERT dbo.TipoEntidad (
+	id,
+	nombre,
+	activo
+	)
+SELECT X.id,
+	X.Nombre,
+	1
+FROM openxml(@hdoc, '/TipoEntidades/Entidad', 1) WITH (
+		id INT,
+		Nombre NVARCHAR(50)
+		) AS X
+SELECT *
+FROM TipoEntidad
+
+EXEC sp_xml_removedocument @hdoc
+
+SET IDENTITY_INSERT TipoEntidad OFF
+GO
+
+--INSERT TIPOTRANSCONSUMO CATALOG TABLE
+DECLARE @hdoc INT;
+
+SET IDENTITY_INSERT TipoTransaccionConsumo ON
+
+DECLARE @TipoTransaccionConsumoXML XML;
+
+SELECT @TipoTransaccionConsumoXML = T
+FROM openrowset(BULK 'C:\xml\TipoTransConsumo.xml', single_blob) AS TipoTransaccionConsumo(T)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@TipoTransaccionConsumoXML
+
+INSERT dbo.TipoTransaccionConsumo (
+	id,
+	nombre,
+	activo
+	)
+SELECT X.id,
+	X.Nombre,
+	1
+FROM openxml(@hdoc, '/TipoTransConsumo/TransConsumo', 1) WITH (
+		id INT,
+		Nombre NVARCHAR(50)
+		) AS X
+SELECT *
+FROM TipoTransaccionConsumo
+
+EXEC sp_xml_removedocument @hdoc
+
+SET IDENTITY_INSERT TipoTransaccionConsumo OFF
+GO
+
+--INSERT SAMPLE DATA
 insert Usuario(username, passwd, isAdmin, activo)
 values ('a', '1', 1, 1),
 ('b', '1', 0, 1),

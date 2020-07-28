@@ -16,8 +16,7 @@ BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		SELECT
-			R.id as [id],
+		SELECT R.id AS [id],
 			@inNumFinca AS [Numero Finca],
 			C.nombre AS [Concepto Cobro],
 			R.fecha AS [Fecha de Emision],
@@ -26,10 +25,14 @@ BEGIN
 		FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[ConceptoCobro] C ON R.idConceptoCobro = C.id
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
-		WHERE R.esPendiente = 1
+		WHERE R.idTipoEstado = (
+				SELECT T.id
+				FROM [dbo].[TipoEstadoRecibo] T
+				WHERE T.estado = 'Pendiente'
+				)
 			AND R.activo = 1
 			AND R.idPropiedad = P.id
-		Order by R.fecha asc
+		ORDER BY R.fecha ASC
 	END TRY
 
 	BEGIN CATCH

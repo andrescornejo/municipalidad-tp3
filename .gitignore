@@ -10,6 +10,7 @@
 *.map
 *.ts
 *.flow
+*.swp
 
 #removes folders added by ionide extension
 .ionide/

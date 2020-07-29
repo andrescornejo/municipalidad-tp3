@@ -29,7 +29,7 @@ BEGIN
 		INNER JOIN [dbo].[Propiedad] P ON @inNumFinca = P.NumFinca
 		WHERE R.idPropiedad = P.id
 			AND R.activo = 1
-			AND R.esPendiente = 0
+			AND R.idTipoEstado = (select e.id from TipoEstadoRecibo e where e.estado='Pagado')
 		WHILE (
 				SELECT COUNT(*)
 				FROM @tmpIdComprob

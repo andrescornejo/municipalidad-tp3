@@ -1,12 +1,12 @@
 # 2020-
 
-### start: 
-
-### end: 
+### Work time:
 
 ## TODO:
 - [ ] 
 
 ## notes:
+
+## resourced used:
 
 ## questions:

@@ -9,6 +9,12 @@
 *.css
 *.map
 *.ts
+*.flow
+*.swp
+
+#removes folders added by ionide extension
+.ionide/
+sql/.ionide
 
 # User-specific files
 *.rsuser

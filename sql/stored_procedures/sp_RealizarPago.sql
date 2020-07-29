@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: csp_PagoAgua
+ * Stored Procedure: csp_RealizarPago
  * Description: Realiza el pago de todos los recibos pendientes de una finca
  * Author: Pablo Alpizar
  */
@@ -30,7 +30,11 @@ BEGIN
 		SELECT R.id
 		FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
-		WHERE R.esPendiente = 1
+		WHERE R.idTipoEstado = (
+			SELECT T.id 
+			FROM [dbo].[TipoEstadoRecibo] T
+			WHERE T.estado = 'Pediente'
+		)
 			AND R.idPropiedad = P.id
 			AND R.activo = 1
 			AND idConceptoCobro = @idTipoCC
@@ -80,22 +84,23 @@ BEGIN
 					idComprobantePago,
 					idPropiedad,
 					idConceptoCobro,
+					idTipoEstado,
 					fecha,
 					fechaVencimiento,
 					monto,
-					esPendiente,
 					Activo
 					)
 				SELECT @inIdComprobante,
 					P.id,
 					CC.id,
+					T.id,
 					@inFecha,
 					@inFecha,
 					@InterestMot,
-					0,
 					1
 				FROM [dbo].[Propiedad] P
-				JOIN [dbo].[ConceptoCobro] CC ON CC.nombre = 'Interes Moratorio'
+				INNER JOIN [dbo].[ConceptoCobro] CC ON CC.nombre = 'Interes Moratorio'
+				INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pagado'
 				WHERE P.NumFinca = @inNumFinca
 
 				-- incluimos en monto del recibo en el comprobante
@@ -106,12 +111,12 @@ BEGIN
 
 			-- Actualizo los valores del recibo
 			UPDATE [dbo].[Recibo]
-			SET esPendiente = 0
-			WHERE id = @idRecibo
-
-			-- Actualizo el idComprobante
-			UPDATE [dbo].[Recibo]
-			SET idComprobantePago = @inIdComprobante
+			SET idTipoEstado = (
+					SELECT T.id
+					FROM [dbo].[TipoEstadoRecibo] T
+					WHERE T.estado = 'Pagado'
+					),
+				idComprobantePago = @inIdComprobante
 			WHERE id = @idRecibo
 
 			-- Actualizo el monto total del comprobante
@@ -123,11 +128,26 @@ BEGIN
 					)
 			WHERE id = @inIdComprobante
 
-			IF EXISTS (SELECT RE.id FROM [dbo].[Reconexion] RE WHERE RE.id = @idRecibo)
+			IF EXISTS (
+					SELECT RE.id
+					FROM [dbo].[Reconexion] RE
+					WHERE RE.id = @idRecibo
+					)
 			BEGIN
-				EXEC csp_RealizarPago @inNumFinca, @inIdComprobante, @inFecha, 1
-				DECLARE @idPropiedad INT = (SELECT P.id FROM [dbo].[Propiedad] P WHERE P.NumFinca = @inNumFinca)
-				EXEC csp_generarOrdReconexion @inFecha, @idPropiedad, @idRecibo
+				EXEC csp_RealizarPago @inNumFinca,
+					@inIdComprobante,
+					@inFecha,
+					1
+
+				DECLARE @idPropiedad INT = (
+						SELECT P.id
+						FROM [dbo].[Propiedad] P
+						WHERE P.NumFinca = @inNumFinca
+						)
+
+				EXEC csp_generarOrdReconexion @inFecha,
+					@idPropiedad,
+					@idRecibo
 			END
 		END
 

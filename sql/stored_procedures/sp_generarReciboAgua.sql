@@ -87,7 +87,12 @@ BEGIN
 				-- quiere decir que el agua esta cortada y no deberia realizar recibos de agua				
 				IF (SELECT COUNT(R.id) FROM [dbo].[Recibo] R 
 					WHERE R.idPropiedad = @idPropiedad AND
-					R.esPendiente = 1 AND R.idConceptoCobro = 10) = 0 
+					R.idTipoEstado = (
+						SELECT T.id 
+						FROM [dbo].[TipoEstadoRecibo] T
+						WHERE T.estado = 'Pediente' 						
+					)
+					AND R.idConceptoCobro = 10) = 0 
 				BEGIN
 					-- obtenemos el consumo
 					SET @ConsumoM3 = (
@@ -137,20 +142,21 @@ BEGIN
 		INSERT INTO [dbo].[Recibo] (
 			idPropiedad,
 			idConceptoCobro,
+			idTipoEstado,
 			fecha,
 			fechaVencimiento,
 			monto,
-			esPendiente,
 			Activo
 			)
 		SELECT tmpR.idPropiedad,
 			tmpR.idConceptoCobro,
+			T.id,
 			tmpR.Fecha,
 			tmpR.FechaVencimiento,
 			tmpR.Monto,
-			1,
 			1
 		FROM @tmpRecibos tmpR
+		INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
 
 		WHILE (
 				SELECT COUNT(*)

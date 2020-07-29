@@ -1,5 +1,8 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ClientPanel.aspx.cs" Inherits="Muni.Pages.Client.ClientPanel" %>
 
+<%@ Register Src="~/Pages/Client/ClientPanelUC.ascx" TagPrefix="uc1" TagName="ClientPanelUC" %>
+
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -13,18 +16,7 @@
 </head>
 <body>
     <form id="clientPanelForm" runat="server">
-    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-    <div class="container">
-        <nav class="navbar navbar-dark bg-dark fixed-top flex-md-nowrap p-2 shadow" >
-            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Panel de cliente</a>
-            <ul class="navbar-nav px-3">
-                <li class="nav-item text-nowrap">
-                    <asp:Button ID="logoutBtn" runat="server" Text="Cerrar sesión" OnClick="logoutBtn_Click" CssClass="btn btn-outline-danger my-2 my-sm-0" type="submit"/>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    <hr class="my-5"/>
+    <uc1:ClientPanelUC runat="server" id="ClientPanelUC" />
     <div class="container">
         <div class="jumbotron">
             <asp:Label ID="welcomeLbl" CssClass="display-4" runat="server" Text="Placeholder text"></asp:Label>
@@ -38,10 +30,15 @@
             <asp:Button ID="btnVerCompobantes" runat="server" Text="Ver comprobantes de pago" CssClass="btn btn-primary btn-lg" OnClick="btnVerCompobantes_Click"/>
 
             <hr class="my-4"/>
-            <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false" OnSelectedIndexChanged = "OnSelectedIndexChanged">
+            <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark h5" AutoGenerateColumns="false" OnRowCommand="gridProp_RowCommand">
                 <Columns>
-                    <asp:ButtonField Text="Seleccionar Propiedad" CommandName="Select" ItemStyle-Width="100"/>
-                    <asp:BoundField DataField="# Propiedad" HeaderText="# Propiedad" />
+                    <asp:TemplateField ShowHeader="False" ItemStyle-Width="130">
+                        <ItemTemplate>
+                            <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Select"
+                                Text="Seleccionar" CommandArgument='<%# Eval("# Propiedad") %>' CssClass="btn btn-info btn-lg"/>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:BoundField DataField="# Propiedad" HeaderText="# Propiedad"/>
                     <asp:BoundField DataField="Valor" HeaderText="Valor" />
                     <asp:BoundField DataField="Direccion" HeaderText="Dirección" />
                 </Columns>
@@ -68,7 +65,7 @@
                             <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                            <button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancelar</button>
                         </div>
                     </div>
                 </ContentTemplate>
@@ -76,10 +73,7 @@
         </div>
     </div>
 
-    <%-- jQuery ,popper.js ,bootstrap.js --%>
-    <script src="../../Scripts/jquery-3.5.1.min.js"></script>
-    <script src="../../Scripts/popper.min.js"></script>
-    <script src="../../Scripts/bootstrap.min.js"></script>
+
     </form>
     
 </body>

@@ -9,12 +9,14 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_agregarTransConsumo @inFecha DATE,  @OperacionXML XML
+ALTER PROC csp_agregarTransConsumo @inFecha DATE,
+	@OperacionXML XML
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
-		DECLARE @MontoM3 MONEY
+
+		DECLARE @MontoM3 INT
 		DECLARE @NumFincaRef INT
 		DECLARE @hdoc INT
 		DECLARE @idTipoTrans INT
@@ -25,13 +27,6 @@ BEGIN
 			Descripcion NVARCHAR(100),
 			NumFinca INT
 			)
-
-		SET @MontoM3 = (
-				SELECT CC.ValorM3
-				FROM dbo.CC_ConsumoAgua CC
-				INNER JOIN dbo.ConceptoCobro C ON C.nombre = 'Agua'
-				WHERE C.id = CC.id
-				)
 
 		EXEC sp_xml_preparedocument @hdoc OUT,
 			@OperacionXML
@@ -60,13 +55,54 @@ BEGIN
 		EXEC sp_xml_removedocument @hdoc;
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
 		BEGIN TRANSACTION
 
-		WHILE (SELECT COUNT(*) FROM @tmpConsumo) > 0
+		WHILE (
+				SELECT COUNT(*)
+				FROM @tmpConsumo
+				) > 0
 		BEGIN
 			-- Seleccionamos la primera propiedad
-			SET @NumFincaRef = (SELECT TOP 1 tmp.NumFinca FROM @tmpConsumo tmp ORDER BY tmp.NumFinca DESC)
-			SET @idTipoTrans = (SELECT TOP 1 tmp.idTipoTransConsumo FROM @tmpConsumo tmp ORDER BY tmp.NumFinca DESC)
+			SET @NumFincaRef = (
+					SELECT TOP 1 tmp.NumFinca
+					FROM @tmpConsumo tmp
+					ORDER BY tmp.NumFinca DESC
+					)
+			SET @idTipoTrans = (
+					SELECT TOP 1 tmp.idTipoTransConsumo
+					FROM @tmpConsumo tmp
+					ORDER BY tmp.NumFinca DESC
+					)
+					
+			SET @MontoM3 = (
+					CASE 
+						WHEN @idTipoTrans = 1
+							THEN (
+									SELECT tmp.LecturaM3
+									FROM @tmpConsumo tmp
+									WHERE tmp.NumFinca = @NumFincaRef
+										AND tmp.idTipoTransConsumo = @idTipoTrans
+									) - (							
+									SELECT P.UltimoConsumoM3
+									FROM [dbo].[Propiedad] P
+									WHERE P.NumFinca = @NumFincaRef
+									)
+						WHEN @idTipoTrans = 2
+							THEN - (
+									SELECT tmp.LecturaM3
+									FROM @tmpConsumo tmp
+									WHERE tmp.NumFinca = @NumFincaRef
+										AND tmp.idTipoTransConsumo = @idTipoTrans
+									)
+						ELSE (
+								SELECT tmp.LecturaM3
+								FROM @tmpConsumo tmp
+								WHERE tmp.NumFinca = @NumFincaRef
+									AND tmp.idTipoTransConsumo = @idTipoTrans
+								)
+						END
+					)
 
 			INSERT dbo.TransaccionConsumo (
 				idPropiedad,
@@ -81,28 +117,31 @@ BEGIN
 				tmp.FechaXml,
 				@MontoM3,
 				tmp.LecturaM3,
-				(CASE WHEN @idTipoTrans = 1 THEN tmp.LecturaM3
-					WHEN @idTipoTrans = 2 then P.ConsumoAcumuladoM3 - tmp.LecturaM3
-					ELSE P.ConsumoAcumuladoM3 + tmp.LecturaM3
-				END),
+				P.ConsumoAcumuladoM3 + @MontoM3,
 				1,
 				@idTipoTrans
 			FROM @tmpConsumo tmp
 			INNER JOIN dbo.Propiedad P ON @NumFincaRef = P.NumFinca
-			WHERE tmp.NumFinca = @NumFincaRef AND tmp.idTipoTransConsumo = @idTipoTrans
-	
-	
+			WHERE tmp.NumFinca = @NumFincaRef
+				AND tmp.idTipoTransConsumo = @idTipoTrans
+
 			UPDATE [dbo].[Propiedad]
-			SET ConsumoAcumuladoM3 = (SELECT TC.NuevoAcumuladoM3 
-										FROM [dbo].[TransaccionConsumo] TC
-										INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @NumFincaRef 
-										WHERE TC.idPropiedad = P.id AND TC.fecha = @inFecha
-												AND TC.idTipoTransacCons = @idTipoTrans)
+			SET ConsumoAcumuladoM3 = (
+					SELECT TC.NuevoAcumuladoM3
+					FROM [dbo].[TransaccionConsumo] TC
+					INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @NumFincaRef
+					WHERE TC.idPropiedad = P.id
+						AND TC.fecha = @inFecha
+						AND TC.idTipoTransacCons = @idTipoTrans
+					)
 			WHERE NumFinca = @NumFincaRef
 
-			DELETE @tmpConsumo WHERE NumFinca = @NumFincaRef AND idTipoTransConsumo = @idTipoTrans
+			DELETE @tmpConsumo
+			WHERE NumFinca = @NumFincaRef
+				AND idTipoTransConsumo = @idTipoTrans
 		END
-		COMMIT 
+
+		COMMIT
 	END TRY
 
 	BEGIN CATCH
@@ -119,5 +158,3 @@ BEGIN
 	END CATCH
 END
 GO
-
-

@@ -15,15 +15,12 @@ namespace Muni.Pages.Client
         protected void Page_Load(object sender, EventArgs e)
         {
             this.welcomeLbl.Text = "Bienvenido, " + Globals.CURRENTUSER + ".";
-            this.gridView.DataSource = Cliente.getClientProperties(Globals.CURRENTUSER);
-            this.gridView.DataBind();
-        }
-
-        protected void logoutBtn_Click(object sender, EventArgs e)
-        {
-            Globals.logoutUser();
-            Cliente.clearCurrentPropery();
-            Response.Redirect("../LoginPage.aspx");
+            if (!Page.IsPostBack)
+            {
+                //Button inside grid triggers full postback, hence why this code is checked for !IsPostBack.
+                this.gridView.DataSource = Cliente.getClientProperties(Globals.CURRENTUSER);
+                this.gridView.DataBind();
+            }
         }
 
         private void setPropID(int propID)
@@ -39,37 +36,54 @@ namespace Muni.Pages.Client
             lblModalBody.Text = "";
         }
 
-        protected void OnSelectedIndexChanged(object sender, EventArgs e)
+        protected void gridProp_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            //Accessing BoundField Column.
-            string name = gridView.SelectedRow.Cells[1].Text;
+            if (e.CommandName == "Select")
+            {
+                //Determine the RowIndex of the Row whose Button was clicked.
+                //int rowIndex = Convert.ToInt32(e.CommandArgument);
+                ////Reference the GridView Row.
+                //GridViewRow row = gridView.Rows[rowIndex];
+                ////Get the values.
 
-            this.propidTB.Text = name;
+                //string name = row.Cells[1].Text;
+                this.propidTB.Text = e.CommandArgument.ToString();
+            }
         }
+
         protected void verRecPenBtn_Click(object sender, EventArgs e)
         {
-            if (propidTB.Text.Length == 0)
-                return;
+            int propID;
+            bool parseRes = Int32.TryParse(propidTB.Text, out propID);
 
-            string prop = propidTB.Text;
+            if (propidTB.Text.Length != 0 && parseRes)
+            {
+                setPropID(propID);
+                Response.Redirect("consultarRecibosPendientes.aspx");
+            }
+            else
+                MessageBox.Show("Entrada invalida.");
 
-            clearModal();
-            setPropID(Convert.ToInt32(prop));
-            lblModalTitle.Text = "Recibos pendientes";
-            lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
+            //Code before proyecto 3.
+            //clearModal();
+            //lblModalTitle.Text = "Recibos pendientes";
+            //lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
 
-            this.gridModal.DataSource = Cliente.getRecibosPendientes(Cliente.CURRENTPROPERTY);
-            this.gridModal.DataBind();
+            //this.gridModal.DataSource = Cliente.getRecibosPendientes(Cliente.CURRENTPROPERTY);
+            //this.gridModal.DataBind();
 
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
-            upModal.Update();
+            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
+            //upModal.Update();
         }
 
         protected void btnVerRecPagados_Click(object sender, EventArgs e)
         {
             if (propidTB.Text.Length == 0)
+            {
+                MessageBox.Show("Entrada invalida.");
                 return;
-
+            }
+                
             string prop = propidTB.Text;
 
             clearModal();
@@ -87,7 +101,10 @@ namespace Muni.Pages.Client
         protected void btnVerCompobantes_Click(object sender, EventArgs e)
         {
             if (propidTB.Text.Length == 0)
+            {
+                MessageBox.Show("Entrada invalida.");
                 return;
+            }
 
             string prop = propidTB.Text;
 
@@ -102,5 +119,6 @@ namespace Muni.Pages.Client
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
             upModal.Update();
         }
+
     }
 }

@@ -14,7 +14,7 @@ namespace Muni.Classes
 
         public static int CURRENTPROPERTY { get => cURRENTPROPERTY; set => cURRENTPROPERTY = value; }
 
-        public static void clearCurrentPropery() { CURRENTPROPERTY = -1; }
+        public static void clearCurrentProperty() { CURRENTPROPERTY = -1; }
 
         #endregion
 

@@ -36,6 +36,10 @@ BEGIN
 		SELECT TR.id
 		FROM @inTableRecibos TR
 
+		set @montoTotal = 0
+		set @MontoInteresMot = 0
+		set @MontoRecibo = 0
+
 		WHILE (
 				SELECT COUNT(tmp.id)
 				FROM @tmpIdRecibos tmp
@@ -67,10 +71,10 @@ BEGIN
 			WHERE R.id = @idRecibo
 
 			-- Calcular los intereses
-			SET @MontoInteresMot = CASE 
-					WHEN GETDATE() <= @FechaVencimiento
+			 SET @MontoInteresMot = CASE 
+					WHEN GETDATE() < @FechaVencimiento
 						THEN 0
-					ELSE (@MontoRecibo * @TasaInteres / 365) * ABS(DATEDIFF(DAY, @FechaVencimiento, GETDATE()))
+					ELSE ((@MontoRecibo * (@TasaInteres / 365)) * ABS(DATEDIFF(DAY, @FechaVencimiento, GETDATE())))
 					END
 
 			-- Si el monto es mayor a cero generar un recibo de intereses temporal

@@ -1,5 +1,5 @@
 <TipoEstado>
-	<Estado id="1" Nombre="Pediente"/>
+	<Estado id="1" Nombre="Pendiente"/>
 	<Estado id="2" Nombre="Pagado"/>
 	<Estado id="3" Nombre="Anulado"/>
 </TipoEstado>

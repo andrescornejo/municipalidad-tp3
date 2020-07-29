@@ -48,7 +48,7 @@ namespace Muni.Pages.Client
 
         protected void btnConsult_Click(object sender, EventArgs e)
         {
-            DataTable rawTable = getGridIDs();
+            DataTable rawTable = getGridViewIDs();
             verifyConsultData(rawTable);
             //upModal.Update();
 
@@ -59,19 +59,25 @@ namespace Muni.Pages.Client
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
+            DataTable dt = getModalGridIDs();
+            abortPayment(dt);
             setModalVisibility("myModal", false);
             MessageBox.Show("Pago de recibos abortado.");
+            reloadGridView();
         }
 
         protected void btnPay_Click(object sender, EventArgs e)
         {
-            DataTable selectedData = getGridIDs();
+            DataTable dt = getModalGridIDs();
+            excecutePayment(dt);          
+            setModalVisibility("myModal", false);
+            MessageBox.Show("Pago de recibos realizado con éxito.");
             reloadGridView();
 
             //For debugging purposes.
-            //g2.DataSource = selectedData;
-            //g2.DataBind();
-            setModalVisibility("myModal", false);
+            //dg1.DataSource = selectedData;
+            //dg1.DataBind();
+
         }
 
         #endregion
@@ -96,9 +102,9 @@ namespace Muni.Pages.Client
         {
             using (SqlConnection connection = Globals.getConnection())
             {
-                connection.Open();
                 using (SqlCommand cmd = connection.CreateCommand())
                 {
+                    connection.Open();
                     SqlDataAdapter da = new SqlDataAdapter();
                     DataTable dt = new DataTable();
 
@@ -113,18 +119,35 @@ namespace Muni.Pages.Client
 
                     da.SelectCommand = cmd;
                     da.Fill(dt);
-
-                    cmd.ExecuteNonQuery();
                     ViewState["Monto"] = cmd.Parameters["@montoTotal"].Value;
                     montoTotal = Convert.ToDouble(ViewState["Monto"].ToString());
-                    //montoTotal = Convert.ToDouble(cmd.Parameters["@montoTotal"].Value);
                     
                     connection.Close();
                     return dt;
                 }
             }
         }
+        protected void abortPayment(DataTable input)
+        {
+            using (SqlConnection connection = Globals.getConnection())
+            {
+                connection.Open();
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "dbo.csp_clienteCancelaPago";
+                    command.CommandType = CommandType.StoredProcedure;
 
+                    SqlParameter parameter;
+                    parameter = command.Parameters.AddWithValue("@inTablaRecibos", input);
+
+                    parameter.SqlDbType = SqlDbType.Structured;
+                    parameter.TypeName = "dbo.udt_idTable";
+
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
+        }
         protected void excecutePayment(DataTable input)
         {
             using (SqlConnection connection = Globals.getConnection())
@@ -139,7 +162,7 @@ namespace Muni.Pages.Client
                     parameter = command.Parameters.AddWithValue("@inTablaRecibos", input);
 
                     parameter.SqlDbType = SqlDbType.Structured;
-                    parameter.TypeName = "dbo.udt_Recibo";
+                    parameter.TypeName = "dbo.udt_idTable";
 
                     command.ExecuteNonQuery();
                 }
@@ -151,7 +174,7 @@ namespace Muni.Pages.Client
 
         #region DataManagingFunctions
 
-        protected DataTable getGridIDs()
+        protected DataTable getGridViewIDs()
         {
             setIDVisibility(true);
             DataTable dt = new DataTable();
@@ -167,6 +190,24 @@ namespace Muni.Pages.Client
 
                     dt.Rows.Add(dr);
                 }
+            }
+            prepareTable(dt);
+
+            return dt;
+        }
+
+        protected DataTable getModalGridIDs()
+        {
+            setIDVisibility(true);
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add("column1");
+            foreach (GridViewRow row in gridModal.Rows)
+            {
+                DataRow dr = dt.NewRow();
+                dr["column1"] = row.Cells[0].Text;
+
+                dt.Rows.Add(dr);
             }
             prepareTable(dt);
 

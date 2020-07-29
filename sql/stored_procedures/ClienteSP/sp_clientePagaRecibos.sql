@@ -10,13 +10,13 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_clientePagaRecibos @inTablaRecibos udt_Recibo readonly
+ALTER PROC csp_clientePagaRecibos @inTablaRecibos udt_idTable readonly
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		DECLARE @idTable TABLE (ID INT)
+		DECLARE @idTable TABLE (storedID INT)
 		DECLARE @ID INT,
 			@idComprobante INT,
 			@idPropiedad INT,
@@ -24,7 +24,7 @@ BEGIN
 
 		-- Insertar los id de los recibos a pagar en una tabla para iterar
 		INSERT @idTable
-		SELECT i.id
+		SELECT i.storedID
 		FROM @inTablaRecibos i
 
 		-- Crear el comprobante de pago
@@ -56,11 +56,11 @@ BEGIN
 					FROM @idTable
 					)
 			BEGIN
-				SELECT TOP 1 @ID = ID
+				SELECT TOP 1 @ID = storedID
 				FROM @idTable
 
 				DELETE @idTable
-				WHERE ID = @ID
+				WHERE storedID = @ID
 
 				-- Actualizar los de estado y idComprobante del recibo 
 				UPDATE [dbo].[Recibo]

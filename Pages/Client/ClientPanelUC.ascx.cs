@@ -21,5 +21,17 @@ namespace Muni.Pages.Client
             Cliente.clearCurrentProperty();
             Response.Redirect("../LoginPage.aspx");
         }
+
+        public void alertMsg(string msg)
+        {
+            lblAlert.Text = msg;
+            this.alertDiv.Visible = true;
+        }
+
+        public void successMsg(string msg)
+        {
+            lblSucc.Text = msg;
+            this.successDiv.Visible = true;
+        }
     }
 }

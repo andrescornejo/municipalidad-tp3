@@ -31,10 +31,15 @@ BEGIN
 			activo BIT
 			)
 		DECLARE @tmpIdRecibos TABLE (id INT)
-
+		DECLARE @tmpRecibosConsulta TABLE (id INT)
+		-- Tomar todos los id de los recibos seleccionados
 		INSERT INTO @tmpIdRecibos (id)
 		SELECT TR.id
 		FROM @inTableRecibos TR
+
+		-- insertarlos en los recibos a consultar
+		INSERT @tmpRecibosConsulta
+		SELECT id FROM @tmpIdRecibos
 
 		WHILE (
 				SELECT COUNT(tmp.id)
@@ -105,43 +110,43 @@ BEGIN
 		-- Insertar los recibos en la base
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
-			INSERT INTO [dbo].[Recibo] (
-				idPropiedad,
-				idConceptoCobro,
-				idTipoEstado,
-				fecha,
-				fechaVencimiento,
-				monto,
-				activo
-				)
-			SELECT tmpR.idPropiedad,
-				tmpR.idConceptoCobro,
-				tmpR.idEstado,
-				tmpR.fecha,
-				tmpR.fechaVencimiento,
-				tmpR.monto,
-				tmpR.activo
-			FROM @tmpRecibosInt tmpR
+			WHILE (SELECT COUNT(*) FROM @tmpRecibosInt tmp) > 0
+			BEGIN
+				INSERT INTO [dbo].[Recibo] (
+					idPropiedad,
+					idConceptoCobro,
+					idTipoEstado,
+					fecha,
+					fechaVencimiento,
+					monto,
+					activo
+					)
+				SELECT tmpR.idPropiedad,
+					tmpR.idConceptoCobro,
+					tmpR.idEstado,
+					tmpR.fecha,
+					tmpR.fechaVencimiento,
+					tmpR.monto,
+					tmpR.activo
+				FROM @tmpRecibosInt tmpR
+
+				-- Guardar el id del recibo creado en los Recibos consulta
+				INSERT INTO @tmpRecibosConsulta (id)
+				SELECT TOP (1) R.id FROM [dbo].[Recibo] R ORDER BY R.id DESC 
+			END
 		COMMIT
 
 		-- Select de todos los recibos de interes y los seleccionados
-		SELECT TR.numPropiedad AS [Numero Finca],
-			TR.conceptoCobro AS [Concepto Cobro],
-			TR.fecha AS [Fecha],
-			TR.fechaVence AS [Fecha Vencimiento],
-			TR.montoTotal AS [Monto]
-		FROM @inTableRecibos TR
-		
-		UNION
-		
-		SELECT P.NumFinca AS [Numero Finca],
+		SELECT R.id AS [id],
+			P.numFinca AS [Numero Finca],
 			C.nombre AS [Concepto Cobro],
-			tmpR.fecha AS [Fecha],
-			tmpR.fechaVencimiento AS [Fecha Vencimiento],
-			tmpR.monto AS [Monto]
-		FROM @tmpRecibosInt tmpR
-		INNER JOIN [dbo].[Propiedad] P ON tmpR.idPropiedad = P.id
-		INNER JOIN [dbo].[ConceptoCobro] C ON tmpR.idConceptoCobro = C.id
+			R.fecha AS [Fecha de Emision],
+			R.fechaVencimiento AS [Fecha Vencimiento],
+			R.monto AS [Monto Total]
+		FROM [dbo].[Recibo] R
+		INNER JOIN @tmpRecibosConsulta tmp ON R.id = tmp.id
+		INNER JOIN [dbo].[Propiedad] P ON R.idPropiedad = P.id
+		INNER JOIN [dbo].[ConceptoCobro] C ON R.idConceptoCobro = C.id
 	END TRY
 
 	BEGIN CATCH

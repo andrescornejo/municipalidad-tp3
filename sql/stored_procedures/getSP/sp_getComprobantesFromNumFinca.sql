@@ -55,9 +55,9 @@ BEGIN
 			WHERE cmp.id = @idRef
 		END
 
-		SELECT cmp.idComprobante AS [Numero Comprobante],
-			cmp.fecha AS [Fecha],
-			cmp.Monto AS [Monto Total]
+		SELECT cmp.idComprobante AS [id],
+			cmp.fecha AS [fecha],
+			cmp.Monto AS [monto]
 		FROM @tmpComprobantes cmp
 		ORDER BY cmp.fecha ASC
 	END TRY

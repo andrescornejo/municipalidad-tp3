@@ -36,7 +36,7 @@ namespace Muni.Pages.Client
             lblModalBody.Text = "";
         }
 
-        protected void gridProp_RowCommand(object sender, GridViewCommandEventArgs e)
+        protected void gridView_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName == "Select")
             {
@@ -100,24 +100,29 @@ namespace Muni.Pages.Client
 
         protected void btnVerCompobantes_Click(object sender, EventArgs e)
         {
-            if (propidTB.Text.Length == 0)
+            int propID;
+            bool parseRes = Int32.TryParse(propidTB.Text, out propID);
+
+            if (propidTB.Text.Length != 0 && parseRes)
             {
-                MessageBox.Show("Entrada invalida.");
-                return;
+                setPropID(propID);
+                Response.Redirect("consultarComprobantes.aspx");
             }
+            else
+                MessageBox.Show("Entrada invalida.");
 
-            string prop = propidTB.Text;
+            //string prop = propidTB.Text;
 
-            clearModal();
-            setPropID(Convert.ToInt32(prop));
-            lblModalTitle.Text = "Recibos pendientes";
-            lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
+            //clearModal();
+            //setPropID(Convert.ToInt32(prop));
+            //lblModalTitle.Text = "Recibos pendientes";
+            //lblModalBody.Text = "Recibos pendientes de la propiedad: " + prop;
 
-            this.gridModal.DataSource = Cliente.getComprobantes(Cliente.CURRENTPROPERTY);
-            this.gridModal.DataBind();
+            //this.gridModal.DataSource = Cliente.getComprobantes(Cliente.CURRENTPROPERTY);
+            //this.gridModal.DataBind();
 
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
-            upModal.Update();
+            //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
+            //upModal.Update();
         }
 
     }

@@ -30,7 +30,7 @@
             <asp:Button ID="btnVerCompobantes" runat="server" Text="Ver comprobantes de pago" CssClass="btn btn-primary btn-lg" OnClick="btnVerCompobantes_Click"/>
 
             <hr class="my-4"/>
-            <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark h5" AutoGenerateColumns="false" OnRowCommand="gridProp_RowCommand">
+            <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark h5" AutoGenerateColumns="false" OnRowCommand="gridView_RowCommand">
                 <Columns>
                     <asp:TemplateField ShowHeader="False" ItemStyle-Width="130">
                         <ItemTemplate>

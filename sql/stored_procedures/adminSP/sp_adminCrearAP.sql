@@ -9,7 +9,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_adminCrearAP @inNumFinca udt_Recibo READONLY,
+ALTER PROC csp_adminCrearAP @inNumFinca INT,
 @inMontoTotal MONEY,
 @inPlazo INT, 
 @inCuota MONEY
@@ -24,6 +24,8 @@ BEGIN
 
 			INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
 			SELECT GETDATE(),0,1
+
+			SET @comprobante = (SELECT TOP(1) C.id FROM [dbo].[ComprobanteDePago] C ORDER BY C.id DESC)
 
 			INSERT INTO [dbo].[AP](idPropiedad,
 				idComprobante,
@@ -45,7 +47,8 @@ BEGIN
 				@inCuota,
 				GETDATE(),
 				GETDATE()
-			FROM @inTableRecibos P
+			FROM [dbo].[Propiedad] P
+			WHERE P.NumFinca = @inNumFinca
 
 
 		COMMIT

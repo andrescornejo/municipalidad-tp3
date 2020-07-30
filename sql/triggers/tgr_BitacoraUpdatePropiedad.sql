@@ -70,3 +70,4 @@ BEGIN
     FROM [dbo].[TipoEntidad] T WHERE T.Nombre = 'Propiedad'
 
 END
+GO

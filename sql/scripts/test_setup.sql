@@ -17,6 +17,114 @@ GO
 EXEC sp_MSForEachTable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL' 
 GO
 
+--TRIGGERS
+CREATE OR ALTER TRIGGER dbo.trgBitacoraUpdatePropiedad
+ON dbo.Propiedad
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON
+    DECLARE @jsonDespues NVARCHAR(500)
+    DECLARE @idEntidad INT
+    DECLARE @jsonAntes NVARCHAR(500)
+    DECLARE @Estado NVARCHAR(15)
+
+    set @idEntidad = (select P.id from inserted P)
+
+    SET @Estado = (SELECT CASE WHEN (SELECT D.activo FROM deleted D) = 1
+                    THEN 'Activo'
+                    ELSE 'Inactivo'
+                    END)
+ 
+    SET @jsonAntes = (SELECT TOP 1
+            D.NumFinca AS 'N�mero de propiedad',
+            D.valor AS 'Valor monetario',
+            D.Direccion AS 'Direcci�n',
+            @Estado AS 'Estado',
+            D.ConsumoAcumuladoM3 AS 'Consumo Acumuluado m3',
+            D.UltimoConsumoM3 AS '�ltimo consumo m3'
+        FROM DELETED D
+        FOR JSON PATH, ROOT('Propiedad'))
+
+    SET @Estado = (SELECT CASE WHEN (SELECT P.activo FROM INSERTED P) = 1
+                    THEN 'Activo'
+                    ELSE 'Inactivo'
+                    END)
+
+    SET @jsonDespues = (SELECT 
+            P.NumFinca AS 'N�mero de propiedad',
+            P.valor AS 'Valor monetario',
+            P.Direccion AS 'Direcci�n',
+            @Estado AS 'Estado',
+            P.ConsumoAcumuladoM3 AS 'Consumo Acumuluado m3',
+            P.UltimoConsumoM3 AS '�ltimo consumo m3'
+        FROM INSERTED P
+        FOR JSON PATH, ROOT('Propiedad'))
+    
+    INSERT INTO [dbo].[Bitacora] (
+        idTipoEntidad,
+        idEntidad,
+        jsonAntes,
+        jsonDespues,
+        insertedAt,
+        insertedBy,
+        insertedIn
+    )
+    SELECT 
+        T.id,
+        @idEntidad,
+        @jsonAntes,
+        @jsonDespues,
+        GETDATE(),
+        CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+		'SERVER IP'
+    FROM [dbo].[TipoEntidad] T WHERE T.Nombre = 'Propiedad'
+
+END
+GO
+
+CREATE OR ALTER TRIGGER dbo.trgBitacoraAddPropiedad
+ON [dbo].[Propiedad]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON
+    DECLARE @jsonDespues NVARCHAR(500)
+    DECLARE @idEntidad INT
+
+        set @idEntidad = (select p.id from inserted P)
+        SET @jsonDespues = (SELECT 
+                                P.NumFinca AS 'Numero Finca',
+                                P.valor AS 'Valor',
+                                P.Direccion AS 'Direccion',
+                                'Activo' AS 'Estado',
+                                P.ConsumoAcumuladoM3 AS 'Consumo Acumuluado M3',
+                                P.UltimoConsumoM3 AS 'Consumo Acumulado M3 ultimo recibo'
+                            FROM inserted P
+                            FOR JSON PATH, ROOT('Propiedad'))
+
+        INSERT INTO [dbo].[Bitacora] (
+            idTipoEntidad,
+            idEntidad,
+            jsonAntes,
+            jsonDespues,
+            insertedAt,
+            insertedBy,
+            insertedIn
+        ) 
+        SELECT
+            T.id,
+            @idEntidad,
+            null,
+            @jsonDespues,
+            GETDATE(),
+            CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
+	    	'SERVER IP'
+        FROM [dbo].[TipoEntidad] T WHERE T.Nombre = 'Propiedad'
+
+END
+GO
+
 --INSERT TIPODOCID CATALOG TABLE
 DECLARE @hdoc INT;
 
@@ -42,9 +150,7 @@ FROM openxml(@hdoc, '/TipoDocIdentidad/TipoDocId', 1) WITH (
 		codigoDoc INT,
 		descripcion NVARCHAR(MAX)
 		)
-SELECT *
-FROM TipoDocID
-
+SET IDENTITY_INSERT dbo.TipoDocID OFF
 EXEC sp_xml_removedocument @hdoc
 GO
 
@@ -72,9 +178,6 @@ FROM openxml(@hdoc, '/TipoEstado/Estado', 1) WITH (
 		id INT,
 		Nombre NVARCHAR(25)
 		) AS X
-
-SELECT *
-FROM TipoEstadoRecibo
 
 EXEC sp_xml_removedocument @hdoc
 
@@ -170,6 +273,7 @@ FROM openxml(@hdoc, '/Conceptos_de_Cobro/conceptocobro', 1) WITH (
 	) AS X
 WHERE X.TipoCC = 'CC Fijo'
 
+Set IDENTITY_INSERT ConceptoCobro off
 EXEC sp_xml_removedocument @hdoc
 GO
 
@@ -197,8 +301,6 @@ FROM openxml(@hdoc, '/TipoEntidades/Entidad', 1) WITH (
 		id INT,
 		Nombre NVARCHAR(50)
 		) AS X
-SELECT *
-FROM TipoEntidad
 
 EXEC sp_xml_removedocument @hdoc
 
@@ -230,8 +332,6 @@ FROM openxml(@hdoc, '/TipoTransConsumo/TransConsumo', 1) WITH (
 		id INT,
 		Nombre NVARCHAR(50)
 		) AS X
-SELECT *
-FROM TipoTransaccionConsumo
 
 EXEC sp_xml_removedocument @hdoc
 
@@ -244,10 +344,15 @@ values ('a', '1', 1, 1),
 ('b', '1', 0, 1),
 ('test', 'lol', 1, 1)
 
+--multiple inserts used to prevent problems with the trigger.
 INSERT Propiedad(NumFinca, Valor, Direccion, activo, ConsumoAcumuladoM3, UltimoConsumoM3)
-values (1234, 1234, 'techa', 1, 2, 2),
-(431, 12643, 'techa', 1, 2, 2),
-(1111111, 123, 'techa', 1, 2, 2)
+select 1234, 1234, 'techa', 1, 2, 2
+
+INSERT Propiedad(NumFinca, Valor, Direccion, activo, ConsumoAcumuladoM3, UltimoConsumoM3)
+select 431, 12643, 'techa', 1, 2, 2
+
+INSERT Propiedad(NumFinca, Valor, Direccion, activo, ConsumoAcumuladoM3, UltimoConsumoM3)
+select 1111111, 123, 'techa', 1, 2, 2
 
 insert UsuarioVsPropiedad(idUsuario, idPropiedad, activo)
 values (2, 1, 1),
@@ -268,19 +373,19 @@ values ('2019-8-8', 50000, 1),
 ('2020-6-8', 50000, 1),
 ('2020-7-8', 50000, 1)
 
-insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVencimiento, monto, esPendiente, activo)
-values (1, 1, 1, '2019-8-8', '2019-8-17', 50000, 0, 1),
-(2, 1, 1, '2019-9-8', '2019-9-17', 50000, 0, 1),
-(3, 1, 1, '2019-10-10', '2019-10-17', 50000, 0, 1),
-(4, 1, 1, '2019-11-8', '2019-11-17', 50000, 0, 1),
-(5, 1, 1, '2019-12-8', '2019-12-17', 50000, 0, 1),
-(6, 1, 1, '2020-1-10', '2020-1-17', 50000, 0, 1),
-(7, 1, 1, '2020-2-8', '2020-2-17', 50000, 0, 1),
-(8, 1, 1, '2020-3-8', '2020-3-17', 50000, 0, 1), 
-(9, 1, 1, '2020-4-10', '2020-4-17', 50000, 0, 1),
-(10, 1, 1, '2020-5-8', '2020-5-17', 50000, 0, 1),
-(11, 1, 1, '2020-6-8', '2020-6-17', 50000, 0, 1),
-(12, 1, 1, '2020-7-10', '2020-7-17', 50000, 1, 1),
+insert Recibo(idComprobantePago, idPropiedad, idConceptoCobro, fecha, fechaVencimiento, monto, idTipoEstado, activo)
+values (1, 1, 1, '2019-8-8', '2019-8-17', 50000, 2, 1),
+(2, 1, 1, '2019-9-8', '2019-9-17', 50000, 2, 1),
+(3, 1, 1, '2019-10-10', '2019-10-17', 50000, 2, 1),
+(4, 1, 1, '2019-11-8', '2019-11-17', 50000, 2, 1),
+(5, 1, 1, '2019-12-8', '2019-12-17', 50000, 2, 1),
+(6, 1, 1, '2020-1-10', '2020-1-17', 50000, 2, 1),
+(7, 1, 1, '2020-2-8', '2020-2-17', 50000, 2, 1),
+(8, 1, 1, '2020-3-8', '2020-3-17', 50000, 2, 1), 
+(9, 1, 1, '2020-4-10', '2020-4-17', 50000, 2, 1),
+(10, 1, 1, '2020-5-8', '2020-5-17', 50000, 2, 1),
+(11, 1, 1, '2020-6-8', '2020-6-17', 50000, 2, 1),
+(null, 1, 1, '2020-7-10', '2020-7-17', 50000, 1, 1),
 (null, 1, 1, '2020-7-12', '2020-7-19', 50000, 1, 1),
 (null, 1, 1, '2020-7-14', '2020-7-19', 50000, 1, 1),
 (null, 1, 1, '2020-7-16', '2020-7-19', 50000, 1, 1),

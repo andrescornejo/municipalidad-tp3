@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Web;
@@ -15,8 +16,13 @@ namespace Muni.Pages.Client
     public partial class consultarRecibosPendientes : System.Web.UI.Page
     {
         int currentProp;
+        double montoTotal;
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (ViewState["Monto"] != null)
+                montoTotal = Convert.ToDouble(ViewState["Monto"].ToString());
+            else
+                ViewState["Monto"] = -1;
             //This is needed to make the buttons inside the modal work beyond opening and closing said modal.
             ScriptManager scriptManager = ScriptManager.GetCurrent(this.Page);
             scriptManager.RegisterPostBackControl(this.btnPay);
@@ -42,64 +48,106 @@ namespace Muni.Pages.Client
 
         protected void btnConsult_Click(object sender, EventArgs e)
         {
-            clearModal();
-            lblModalTitle.Text = "Pago de recibos pendientes";
-            lblModalBody.Text = "Recibos pendientes de la propiedad: " + currentProp;
+            DataTable rawTable = getGridViewIDs();
+            verifyConsultData(rawTable);
+            //upModal.Update();
 
-            this.gridModal.DataSource = Cliente.getRecibosPendientes(Cliente.CURRENTPROPERTY);
-            this.gridModal.DataBind();
-
-            setModalVisibility("myModal", true);
-            upModal.Update();
+            ////For debugging purposes.
+            //dg1.DataSource = rawTable;
+            //dg1.DataBind();
         }
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
+            DataTable dt = getModalGridIDs();
+            abortPayment(dt);
             setModalVisibility("myModal", false);
             MessageBox.Show("Pago de recibos abortado.");
+            reloadGridView();
         }
 
         protected void btnPay_Click(object sender, EventArgs e)
         {
-            DataTable selectedData = getGridData();
-            processPayment(selectedData);
+            DataTable dt = getModalGridIDs();
+            excecutePayment(dt);          
+            setModalVisibility("myModal", false);
+            MessageBox.Show("Pago de recibos realizado con éxito.");
             reloadGridView();
 
             //For debugging purposes.
-            //g2.DataSource = selectedData;
-            //g2.DataBind();
-            setModalVisibility("myModal", false);
+            //dg1.DataSource = selectedData;
+            //dg1.DataBind();
+
         }
 
         #endregion
 
         #region PaymentLogic
 
-        protected void processPayment(DataTable inputTable)
+        protected void showPendingReceipts(DataTable inputTable)
         {
-            bool validationStatus = validateReceiptOrder(inputTable);
-            if (checkIfAllCB_Empty())
-            {
-                MessageBox.Show("No puede pagar si no ha seleccionado recibos.");
-                return;
-            }
-            else if (validationStatus)
-            {
-                excecutePayment(inputTable);
-                MessageBox.Show("Recibos pagados exitosamente.");
-            }
-            else if (!validationStatus)
-            {
-                MessageBox.Show("No puede pagar recibos más recientes, sin pagar los recibos viejos primero.");
-                return;
-            }
-            else
-            {
-                MessageBox.Show("Error desconocido.");
-                return;
-            }
+            DataTable processedTable = consultPendingReceipts(inputTable);
+
+            clearModal();
+            this.gridModal.DataSource = processedTable;
+            this.gridModal.DataBind();
+            lblModalTitle.Text = "Pago de recibos pendientes";
+            lblModalBody.Text = "Recibos pendientes de la propiedad: " + currentProp;
+            lblModalTotal.Text = "Monto total a pagar: " + montoTotal;
+
+            setModalVisibility("myModal", true);
         }
 
+        protected DataTable consultPendingReceipts(DataTable inputTable)
+        {
+            using (SqlConnection connection = Globals.getConnection())
+            {
+                using (SqlCommand cmd = connection.CreateCommand())
+                {
+                    connection.Open();
+                    SqlDataAdapter da = new SqlDataAdapter();
+                    DataTable dt = new DataTable();
+
+                    cmd.CommandText = "csp_clienteSeleccionaRecibos";
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter parameter = cmd.Parameters.AddWithValue("@inRecibosIDTable", inputTable);
+                    parameter.SqlDbType = SqlDbType.Structured;
+                    parameter.TypeName = "dbo.udt_idTable";
+
+                    cmd.Parameters.Add("@montoTotal", SqlDbType.Money).Direction = ParameterDirection.Output;
+
+                    da.SelectCommand = cmd;
+                    da.Fill(dt);
+                    ViewState["Monto"] = cmd.Parameters["@montoTotal"].Value;
+                    montoTotal = Convert.ToDouble(ViewState["Monto"].ToString());
+                    
+                    connection.Close();
+                    return dt;
+                }
+            }
+        }
+        protected void abortPayment(DataTable input)
+        {
+            using (SqlConnection connection = Globals.getConnection())
+            {
+                connection.Open();
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "dbo.csp_clienteCancelaPago";
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter parameter;
+                    parameter = command.Parameters.AddWithValue("@inTablaRecibos", input);
+
+                    parameter.SqlDbType = SqlDbType.Structured;
+                    parameter.TypeName = "dbo.udt_idTable";
+
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
+        }
         protected void excecutePayment(DataTable input)
         {
             using (SqlConnection connection = Globals.getConnection())
@@ -114,7 +162,7 @@ namespace Muni.Pages.Client
                     parameter = command.Parameters.AddWithValue("@inTablaRecibos", input);
 
                     parameter.SqlDbType = SqlDbType.Structured;
-                    parameter.TypeName = "dbo.udt_Recibo";
+                    parameter.TypeName = "dbo.udt_idTable";
 
                     command.ExecuteNonQuery();
                 }
@@ -126,42 +174,50 @@ namespace Muni.Pages.Client
 
         #region DataManagingFunctions
 
-        protected DataTable getGridData()
+        protected DataTable getGridViewIDs()
         {
             setIDVisibility(true);
             DataTable dt = new DataTable();
-            //i starts in 1 to omit the checkbox column
-            for (int i = 1; i < gridView.Columns.Count; i++)
-            {
-                dt.Columns.Add("column" + i.ToString());
-            }
+
+            dt.Columns.Add("column1");
             foreach (GridViewRow row in gridView.Rows)
             {
                 var checkbox = row.FindControl("cbGv") as CheckBox;
                 if (checkbox.Checked)
                 {
                     DataRow dr = dt.NewRow();
-                    for (int j = 1; j < gridView.Columns.Count; j++)
-                    {
-                        dr["column" + j.ToString()] = row.Cells[j].Text;
-                    }
+                    dr["column1"] = row.Cells[1].Text;
 
                     dt.Rows.Add(dr);
                 }
             }
             prepareTable(dt);
+
+            return dt;
+        }
+
+        protected DataTable getModalGridIDs()
+        {
+            setIDVisibility(true);
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add("column1");
+            foreach (GridViewRow row in gridModal.Rows)
+            {
+                DataRow dr = dt.NewRow();
+                dr["column1"] = row.Cells[0].Text;
+
+                dt.Rows.Add(dr);
+            }
+            prepareTable(dt);
+
             return dt;
         }
 
         //Renames the columns of the table so they can be sent and understood by the database.
         protected void prepareTable(DataTable input)
         {
-            input.Columns["column1"].ColumnName = "id";
-            input.Columns["column2"].ColumnName = "numPropiedad";
-            input.Columns["column3"].ColumnName = "conceptoCobro";
-            input.Columns["column4"].ColumnName = "fecha";
-            input.Columns["column5"].ColumnName = "fechaVence";
-            input.Columns["column6"].ColumnName = "montoTotal";
+            input.Columns["column1"].ColumnName = "storedID";
         }
 
         #endregion
@@ -195,7 +251,7 @@ namespace Muni.Pages.Client
 
         protected void setModalVisibility(string modalName, bool input)
         {   if(input)
-                ScriptManager.RegisterStartupScript(Page, Page.GetType(), modalName, "$('#" + modalName + "').modal();", true);
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), modalName, "$('#" + modalName + "').modal({ backdrop: 'static', keyboard: false});", true);
             else
                 ScriptManager.RegisterStartupScript(this.Page, this.Page.GetType(), "Pop", "$('#"+modalName+"').modal('hide');", true);
         }
@@ -224,8 +280,33 @@ namespace Muni.Pages.Client
         #endregion
 
         #region ValidationFunctions
+        //
+        protected void verifyConsultData(DataTable inputTable)
+        {
+            bool validationStatus = validateReceiptOrder(inputTable);
+            if (checkIfAllCB_Empty())
+            {
+                MessageBox.Show("No puede pagar si no ha seleccionado recibos.");
+                return;
+            }
+            else if (validationStatus)
+            {
+                showPendingReceipts(inputTable);
+            }
+            else if (!validationStatus)
+            {
+                MessageBox.Show("No puede pagar recibos más recientes, sin pagar los recibos viejos primero.");
+                return;
+            }
+            else
+            {
+                MessageBox.Show("Error desconocido.");
+                return;
+            }
+        }
 
-        //This function ensured that you cant pay newer receipts if old ones arent payed yet.
+
+        //This function ensures that you cant pay newer receipts if old ones arent payed yet.
         protected bool validateReceiptOrder(DataTable newDT)
         {
             DataTable oldDT = Cliente.getRecibosPendientes(currentProp);

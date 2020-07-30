@@ -19,7 +19,7 @@
                     <asp:Label ID="lblLead" CssClass="lead" runat="server" >Placeholder text</asp:Label>
                 </div>
                     <asp:Button ID="btnBack" CssClass="btn btn-secondary btn-lg" OnClick="btnBack_Click" Text="Volver" runat="server" />
-                    <asp:Button ID="btnConsult" CssClass="btn btn-primary btn-lg" OnClick="btnConsult_Click" Text="Consultar recibos" runat="server" />
+                    <asp:Button ID="btnConsult" CssClass="btn btn-primary btn-lg" OnClick="btnConsult_Click" Text="Consultar recibos" runat="server"/>
                 <br/>
 
                 <hr class="my-4"/>
@@ -41,7 +41,7 @@
                         <asp:BoundField DataField="Monto Total" HeaderText="Monto total" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="g2" runat="server" AutoGenerateColumns="true"></asp:GridView>
+                <asp:GridView ID="dg1" runat="server" AutoGenerateColumns="true"></asp:GridView>
             </div>
         </div>
 
@@ -57,9 +57,19 @@
                         <div class="modal-body">
                             <asp:Label ID="lblModalBody" runat="server" CssClass="lead" Text=""></asp:Label>
                             <br class="mb-3"/>
-                            <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
-                            <br class="mb-3"/>
-                            <asp:Label ID="lblModalTotal" runat="server" CssClass="lead" Text=""></asp:Label>
+                            <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false">
+                                <Columns>
+                                    <asp:BoundField DataField="id" HeaderText="id" />
+                                    <asp:BoundField DataField="numP" HeaderText="# Propiedad" />
+                                    <asp:BoundField DataField="cc" HeaderText="Concepto de cobro" />
+                                    <asp:BoundField DataField="fecha" HeaderText="Fecha de emisión" />
+                                    <asp:BoundField DataField="fv" HeaderText="Fecha de vencimiento" />
+                                    <asp:BoundField DataField="monto" HeaderText="Monto total" />
+                                </Columns>
+                            </asp:GridView>
+                            <asp:GridView ID="dg2" runat="server" AutoGenerateColumns="true"></asp:GridView>
+                            <div class ="mb-1"></div>
+                            <asp:Label ID="lblModalTotal" runat="server" CssClass="h3" Text=""></asp:Label>
                         </div>
                         <div class="modal-footer">
                             <asp:Button ID="btnCancel" CssClass="btn btn-danger btn-lg" OnClick="btnCancel_Click" Text="Cancelar" runat="server" />

@@ -13,8 +13,8 @@
     <form id="consultarComprobantesForm" runat="server">
         <uc1:ClientPanelUC runat="server" ID="ClientPanelUC" />
         
-        <div>
-            <asp:Button ID="btnBack" CssClass="btn btn-secondary btn-lg" OnClick="btnBack_Click" Text="Volver" runat="server" />
+        <div class="mb-3 mx-5">
+            <asp:Button ID="btnBack" CssClass="btn btn-outline-secondary btn-lg" OnClick="btnBack_Click" Text="Volver" runat="server" />
         </div>
         <div class="container">
             <div class="jumbotron">
@@ -64,7 +64,7 @@
                             <asp:Label ID="lblModalTotal" runat="server" CssClass="lead" Text=""></asp:Label>
                         </div>
                         <div class="modal-footer">
-                            <asp:Button ID="btnCancel" CssClass="btn btn-danger btn-lg" OnClick="btnCancel_Click" Text="Volver" runat="server" />
+                            <button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancelar</button>
                         </div>
                     </div>
                 </ContentTemplate>

@@ -2,6 +2,7 @@
  * Stored Procedure: csp_clienteCancelaPago
  * Description: Stored procedure that handes the table a client sends when he/she cancels pay. 
  * Author: Pablo Alpizar 
+ * Modified by: Andrés Cornejo
  */
 USE municipalidad
 GO
@@ -9,13 +10,13 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_clienteCancelaPago @inTablaRecibos udt_Recibo readonly
+ALTER PROC csp_clienteCancelaPago @inTablaRecibos udt_idTable readonly
 AS
 BEGIN
 	BEGIN TRY
 		SET NOCOUNT ON
 
-		DECLARE @idTable TABLE (ID INT)
+		DECLARE @idTable TABLE (storedID INT)
 		DECLARE @ID INT,
 			@idComprobante INT,
 			@idPropiedad INT,
@@ -23,9 +24,11 @@ BEGIN
 
 		-- Insertar los id de los recibos a pagar en una tabla para iterar
 		INSERT @idTable
-		SELECT i.id
+		SELECT i.storedID
 		FROM @inTablaRecibos i
-        WHERE ConceptoCobro = 'Interes Moratorio'
+		Inner join Recibo r on r.id = i.storedID
+		inner join ConceptoCobro c on c.id = r.idConceptoCobro
+        WHERE c.nombre = 'Interes Moratorio'
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
@@ -38,11 +41,11 @@ BEGIN
 		    		FROM @idTable
 		    		)
 		    BEGIN
-		    	SELECT TOP 1 @ID = ID
+		    	SELECT TOP 1 @ID = storedID
 		    	FROM @idTable
     
 		    	DELETE @idTable
-		    	WHERE ID = @ID
+		    	WHERE storedID = @ID
     
 		    	-- Actualizar los de estado del recibo 
 		    	UPDATE [dbo].[Recibo]

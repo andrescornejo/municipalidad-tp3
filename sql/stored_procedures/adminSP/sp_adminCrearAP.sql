@@ -23,7 +23,7 @@ BEGIN
 			@tasaInteres FLOAT
 		DECLARE @tmpRecibos udt_idTable
 
-		INSERT INTO @tmpRecibos (id)
+		INSERT INTO @tmpRecibos (storedID)
 		SELECT R.id
 		FROM [dbo].[Recibo] R
 		INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca
@@ -96,20 +96,20 @@ BEGIN
 				(SELECT TOP(1) AP.id),
 				TM.id,
 				@inMontoTotal,
-				@0,
+				0,
 				@inPlazo,
 				@inMontoTotal,
 				GETDATE(),
 				@inUserName,
 				1
 			FROM [dbo].[AP] AP
-			INNER JOIN [dbo].[idTipoMovAP] TM ON TM.Nombre = 'Debito'
+			INNER JOIN [dbo].[TipoMovAP] TM ON TM.Nombre = 'Debito'
 			ORDER BY AP.id DESC
 			
 			-- actualizar el AP
 			UPDATE [dbo].[AP]
-			SET saldo = (SELECT TOP (1) M.saldo FROM [MovimientoAP] M ORDER BY M.id DESC ),
-				updateAt = GETDATE()
+			SET saldo = (SELECT TOP (1) M.nuevoSaldo FROM [dbo].[MovimientoAP] M ORDER BY M.id DESC ),
+				updatedAt = GETDATE()
 
 			-- Actulizar el comprobante
 			UPDATE [dbo].[ComprobanteDePago]

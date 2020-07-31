@@ -40,9 +40,18 @@ BEGIN
             SET @numFinca = (SELECT TOP (1) tmp.numFinca FROM @tmpAP tmp)
 
             
-
-
+		
+			DELETE TOP (1) @tmpAP
         END
+		
+		--insertar los AP desde la tabla temporal
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		BEGIN TRANSACTION
+
+			--insertar los AP desde la tabla temporal
+
+		COMMIT
+
 
 	END TRY
 

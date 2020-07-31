@@ -30,10 +30,10 @@
                         <asp:TemplateField ShowHeader="False" ItemStyle-Width="130">
                             <ItemTemplate>
                                 <asp:Button ID="btnSelectGrid" runat="server" CausesValidation="false" CommandName="Select"
-                                    Text="Seleccionar" CommandArgument='<%# Eval("id") %>' CssClass="btn btn-info btn-lg"/>
+                                    Text="Seleccionar" CommandArgument='<%# Eval("numCom") %>' CssClass="btn btn-info btn-lg"/>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="id" HeaderText="Número de comprobante" />
+                        <asp:BoundField DataField="numCom" HeaderText="Número de comprobante" />
                         <asp:BoundField DataField="fecha" HeaderText="Fecha" />
                         <asp:BoundField DataField="monto" HeaderText="Monto total" />
                         <%--<asp:BoundField DataField="desc" HeaderText="Descripción" />--%>
@@ -59,8 +59,8 @@
                             <br class="mb-3"/>
                             <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false">
                                 <Columns>
-                                    <asp:BoundField DataField="id" HeaderText="Número de recibo" />
-                                    <asp:BoundField DataField="numP" HeaderText="Número de propiedad" />
+                                    <asp:BoundField DataField="numRecibo" HeaderText="Número de recibo" />
+                                    <asp:BoundField DataField="numProp" HeaderText="Número de propiedad" />
                                     <asp:BoundField DataField="cc" HeaderText="Concepto de cobro" />
                                     <asp:BoundField DataField="fecha" HeaderText="Fecha de emisión" />
                                     <asp:BoundField DataField="vence" HeaderText="Fecha de expiración " />

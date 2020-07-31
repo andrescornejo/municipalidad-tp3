@@ -3,37 +3,30 @@
  * Description: 
  * Author: Andres Cornejo
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_getRecibosFromComprobante @inID int as
-begin
-	begin try
-		set nocount on
-		
-		SELECT R.id AS [id],
-			P.NumFinca AS [numP],
-			C.nombre AS [cc],
-			R.fecha AS [fecha],
-			R.fechaVencimiento AS [vence],
-			R.monto AS [monto]
-			--DESCRIPCION
-		FROM [dbo].[Recibo] R
-		Inner join [dbo].[ComprobanteDePago] CP ON CP.id = R.idComprobantePago
-		INNER JOIN [dbo].[ConceptoCobro] C ON R.idConceptoCobro = C.id
-		INNER JOIN [dbo].[Propiedad] P ON P.id = R.idPropiedad
-		WHERE R.idTipoEstado = (
-				SELECT T.id
-				FROM [dbo].[TipoEstadoRecibo] T
-				WHERE T.estado = 'Pagado'
-				)
-			AND R.activo = 1
-			and @inID = CP.id
-		ORDER BY R.fecha ASC
+ALTER PROC csp_getRecibosFromComprobante @inID INT
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
 
-	end try
-	begin catch
+		SELECT v.numRecibo,
+			v.numProp,
+			v.cc,
+			v.fecha,
+			v.vence,
+			v.monto
+		FROM view_Recibos v
+		WHERE v.numCom = @inID
+		ORDER BY v.fecha ASC
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -44,7 +37,8 @@ begin
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

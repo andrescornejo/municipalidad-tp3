@@ -25,20 +25,18 @@
                 <br/>
 
                 <hr class="my-4"/>
-                <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false">
+                <asp:GridView ID="gridView" runat="server" CssClass="table table-hover table-dark h5" AutoGenerateColumns="false" OnRowCommand="gridView_RowCommand">
                     <Columns>
                         <asp:TemplateField ShowHeader="False" ItemStyle-Width="130">
                             <ItemTemplate>
-                                <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Select"
-                                    Text="Seleccionar" CommandArgument='' CssClass="btn btn-info btn-lg"/>
+                                <asp:Button ID="btnSelectGrid" runat="server" CausesValidation="false" CommandName="Select"
+                                    Text="Seleccionar" CommandArgument='<%# Eval("numCom") %>' CssClass="btn btn-info btn-lg"/>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="id" HeaderText="id" />
-                        <asp:BoundField DataField="Numero Finca" HeaderText="# Propiedad" />
-                        <asp:BoundField DataField="Concepto Cobro" HeaderText="Concepto de cobro" />
-                        <asp:BoundField DataField="Fecha de Emision" HeaderText="Fecha de emisión" />
-                        <asp:BoundField DataField="Fecha Vencimiento" HeaderText="Fecha de vencimiento" />
-                        <asp:BoundField DataField="Monto Total" HeaderText="Monto total" />
+                        <asp:BoundField DataField="numCom" HeaderText="Número de comprobante" />
+                        <asp:BoundField DataField="fecha" HeaderText="Fecha" />
+                        <asp:BoundField DataField="monto" HeaderText="Monto total" />
+                        <%--<asp:BoundField DataField="desc" HeaderText="Descripción" />--%>
                     </Columns>
                 </asp:GridView>
             </div>
@@ -46,7 +44,7 @@
 
     <!-- Modal code -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <asp:UpdatePanel ID="upModal" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
                 <ContentTemplate>
                     <div class="modal-content">
@@ -59,12 +57,20 @@
                         <div class="modal-body">
                             <asp:Label ID="lblModalBody" runat="server" CssClass="lead" Text=""></asp:Label>
                             <br class="mb-3"/>
-                            <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark"></asp:GridView>
-                            <br class="mb-3"/>
-                            <asp:Label ID="lblModalTotal" runat="server" CssClass="lead" Text=""></asp:Label>
+                            <asp:GridView ID="gridModal" runat="server" CssClass="table table-hover table-dark" AutoGenerateColumns="false">
+                                <Columns>
+                                    <asp:BoundField DataField="numRecibo" HeaderText="Número de recibo" />
+                                    <asp:BoundField DataField="numProp" HeaderText="Número de propiedad" />
+                                    <asp:BoundField DataField="cc" HeaderText="Concepto de cobro" />
+                                    <asp:BoundField DataField="fecha" HeaderText="Fecha de emisión" />
+                                    <asp:BoundField DataField="vence" HeaderText="Fecha de expiración " />
+                                    <asp:BoundField DataField="monto" HeaderText="Monto total" />
+                                    <%--<asp:BoundField DataField="desc" HeaderText="Descripción" />--%>
+                                </Columns>
+                            </asp:GridView>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+                            <button class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cerrar</button>
                         </div>
                     </div>
                 </ContentTemplate>

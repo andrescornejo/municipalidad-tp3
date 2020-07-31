@@ -74,6 +74,18 @@
             </div>
 
         </div>
+        
+        <div class="card-deck my-5">
+
+            <div class="card text-center" style="width: 18rem;">
+                <div class="card-body">
+                    <h3 class="card-title">Arreglos de pago</h3>
+                    <p class="card-text">Generar un arreglo de pago para un usuario designado.</p>
+                    <a href="crearArregloDePago.aspx" class="btn btn-primary">Ver</a>
+                </div>
+            </div>
+
+        </div>
     </div>
 
 

@@ -71,7 +71,7 @@ namespace Muni.Pages.Client
             this.gridModal.DataSource = processedTable;
             this.gridModal.DataBind();
             lblModalTitle.Text = "Consulta de recibos asociados a un comprobante.";
-            lblModalBody.Text = "Recibos pendientes de la propiedad: " + currentProp;
+            lblModalBody.Text = "Recibos asociados al comprobante: " + currentID;
             setModalVisibility("myModal", true);
         }
 

@@ -72,8 +72,8 @@ BEGIN
                 -- IF @idComprobante = NULL OR (SELECT CP.MontoTotal FROM [dbo].[ComprobanteDePago] CP WHERE CP.id = @idComprobante) != 0
                 -- BEGIN
                     -- Creo un comprobante por los recibos ha pagar de esa propiedad
-                    INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,activo)
-                    SELECT @fechaInput, 0, 1
+                    INSERT INTO [dbo].[ComprobanteDePago] (fecha,MontoTotal,descripcion,activo)
+                    SELECT @fechaInput, 0,'Pago en efectivo',1
 
                     SET @idComprobante = (SELECT TOP 1 CP.id FROM [dbo].[ComprobanteDePago] CP ORDER BY CP.id DESC)
                 -- END

@@ -45,6 +45,7 @@ BEGIN
         BEGIN
             SELECT TOP (1) @numFinca = tmp.numFinca, @plazo = tmp.plazo FROM @APXML tmp
             INSERT @tmpIdRecibos 
+			-- tomar los recibos pendientes
 			SELECT R.id 
 			FROM [dbo].[Recibo] R
 			INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @numFinca
@@ -61,7 +62,8 @@ BEGIN
 				@inPlazo = @plazo,
 				@outCuotaAP = @cuota OUTPUT;
 
-			EXEC csp_adminCrearAP 
+			EXEC csp_adminCrearAP
+				@inNumFinca = @numFinca,
 				@inMontoTotal = @montoAP,
 				@inPlazo = @plazo,
 				@inCuota = @cuota,

@@ -46,6 +46,7 @@ BEGIN
 				WHERE CC.id = @idTipoCC
 				)
 
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
 
 		WHILE (
@@ -149,6 +150,8 @@ BEGIN
 					@idPropiedad,
 					@idRecibo
 			END
+
+			
 		END
 
 		COMMIT

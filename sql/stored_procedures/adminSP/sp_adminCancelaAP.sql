@@ -16,7 +16,7 @@ BEGIN
 		SET NOCOUNT ON
         DECLARE @tmpRecibos udt_idTable
 
-        INSERT INTO @tmpRecibos (id)
+        INSERT INTO @tmpRecibos (storedID)
         SELECT R.id
         FROM [dbo].[Recibo] R
         INNER JOIN [dbo].[Propiedad] P ON P.NumFinca = @inNumFinca

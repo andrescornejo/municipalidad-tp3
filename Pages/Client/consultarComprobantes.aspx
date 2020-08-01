@@ -36,7 +36,7 @@
                         <asp:BoundField DataField="numCom" HeaderText="Número de comprobante" />
                         <asp:BoundField DataField="fecha" HeaderText="Fecha" />
                         <asp:BoundField DataField="monto" HeaderText="Monto total" />
-                        <%--<asp:BoundField DataField="desc" HeaderText="Descripción" />--%>
+                        <asp:BoundField DataField="desc" HeaderText="Descripción" />
                     </Columns>
                 </asp:GridView>
             </div>

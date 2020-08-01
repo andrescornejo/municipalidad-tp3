@@ -60,9 +60,10 @@ BEGIN
 			WHERE cmp.id = @idRef
 		END
 
-		SELECT v.numCom,
-			v.fecha,
-			v.monto
+		SELECT v.[numCom],
+			v.[fecha],
+			v.[monto],
+			v.[desc]
 		FROM view_ComprobanteENCRYPTED v
 		INNER JOIN @tmpComprobantes cmp ON cmp.idComprobante = v.numCom
 		ORDER BY v.fecha ASC

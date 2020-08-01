@@ -49,6 +49,7 @@ BEGIN
 			WHERE R.idTipoEstado = (SELECT T.id 
 									FROM [dbo].[TipoEstadoRecibo] T
 									WHERE T.estado = 'Pendiente')
+			AND P.id = R.idPropiedad
 			
 			EXEC csp_crearRecibosIntMoratorio 
 				@inRecibosIDTable = @tmpIdRecibos,

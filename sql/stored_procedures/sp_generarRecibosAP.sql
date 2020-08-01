@@ -84,12 +84,12 @@ BEGIN
 				)
 			SELECT @id,
 				TM.id,
-				AP.cuota - AP.saldo * AP.tasaInteresAnual / 12,
-				AP.saldo * AP.tasaInteresAnual / 12,
+				AP.cuota - AP.saldo * (AP.tasaInteresAnual / 12),
+				AP.saldo * (AP.tasaInteresAnual / 12),
 				AP.plazoResta - 1,
-				AP.saldo - (AP.cuota - AP.saldo * AP.tasaInteresAnual / 12),
+				AP.saldo - (AP.cuota - AP.saldo * (AP.tasaInteresAnual / 12)),
 				@inFecha,
-				'USERNAME',
+				CONVERT(NVARCHAR(100), (SELECT @@SERVERNAME)),
 				1
 			FROM [dbo].[AP] AP
 			INNER JOIN [dbo].[TipoMovAP] TM ON TM.Nombre = 'Credito'

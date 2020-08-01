@@ -50,8 +50,9 @@ BEGIN
 									FROM [dbo].[TipoEstadoRecibo] T
 									WHERE T.estado = 'Pendiente')
 			
-			EXEC csp_clienteSeleccionaRecibos 
+			EXEC csp_crearRecibosIntMoratorio 
 				@inRecibosIDTable = @tmpIdRecibos,
+				@inFecha = @inFecha,
 				@montoTotal = @montoAP OUTPUT;
 
 			EXEC csp_consultaCuotaAP

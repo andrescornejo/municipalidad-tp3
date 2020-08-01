@@ -110,7 +110,7 @@ BEGIN
 			-- actualizar el AP
 			UPDATE [dbo].[AP]
 			SET saldo = (SELECT TOP (1) M.nuevoSaldo FROM [dbo].[MovimientoAP] M ORDER BY M.id DESC ),
-				updatedAt = GETDATE()
+				updatedAt = @inFecha
 
 			-- Actulizar el comprobante
 			UPDATE [dbo].[ComprobanteDePago]

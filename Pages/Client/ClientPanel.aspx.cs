@@ -98,7 +98,7 @@ namespace Muni.Pages.Client
             upModal.Update();
         }
 
-        protected void btnVerCompobantes_Click(object sender, EventArgs e)
+        protected void btnVerComprobantes_Click(object sender, EventArgs e)
         {
             int propID;
             bool parseRes = Int32.TryParse(propidTB.Text, out propID);
@@ -124,6 +124,18 @@ namespace Muni.Pages.Client
             //ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myModal", "$('#myModal').modal();", true);
             //upModal.Update();
         }
+        protected void btnVerAP_Click(object sender, EventArgs e)
+        {
+            int propID;
+            bool parseRes = Int32.TryParse(propidTB.Text, out propID);
 
+            if (propidTB.Text.Length != 0 && parseRes)
+            {
+                setPropID(propID);
+                Response.Redirect("consultarAP_DeProp.aspx");
+            }
+            else
+                MessageBox.Show("Entrada invalida.");
+        }
     }
 }

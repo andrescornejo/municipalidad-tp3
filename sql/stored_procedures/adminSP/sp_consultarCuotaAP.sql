@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: csp_consultaCuotAP
+ * Stored Procedure: csp_consultaCuotaAP
  * Description: 
  * Author: Pablo Alpizar
  */
@@ -9,7 +9,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_consultaCuotAP @inMontoAP MONEY, @inPlazo INT, @outCuotaAP MONEY OUT
+ALTER PROC csp_consultaCuotaAP @inMontoAP MONEY, @inPlazo INT, @outCuotaAP MONEY OUT
 AS
 BEGIN
 	BEGIN TRY

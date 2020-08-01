@@ -37,7 +37,6 @@ BEGIN
 		WHERE @inFecha = fecha
 
         EXEC sp_xml_removedocument @hdoc;
-		select * from @APXML
 		-- Calcular el monto para cada AP
         WHILE (EXISTS(SELECT 1 FROM @APXML))
         BEGIN

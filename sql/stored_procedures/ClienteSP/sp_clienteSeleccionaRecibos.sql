@@ -3,37 +3,40 @@
  * Description: 
  * Author: Andres Cornejo
  */
+USE municipalidad
+GO
 
-use municipalidad
-go
+CREATE
+	OR
 
-create or alter proc csp_clienteSeleccionaRecibos @inRecibosIDTable udt_idTable READONLY, @montoTotal MONEY OUT
-as
-begin
-	begin try
-		set nocount on
-        DECLARE @FechaVencimiento DATE,
+ALTER PROC csp_clienteSeleccionaRecibos @inRecibosIDTable udt_idTable READONLY,
+	@montoTotal MONEY OUT
+AS
+BEGIN
+	BEGIN TRY
+		SET NOCOUNT ON
+
+		DECLARE @FechaVencimiento DATE,
 			@MontoInteresMot MONEY,
 			@TasaInteres FLOAT,
 			@MontoRecibo MONEY,
 			@idRecibo INT
+		DECLARE @idTable TABLE (storedID INT)
+		DECLARE @finalReceiptIDTable TABLE (storedID INT)
 
-declare @idTable table (storedID int)
-declare @finalReceiptIDTable table (storedID int)
-
-        --Insert into the temporary table where the loop will excecute.
+		--Insert into the temporary table where the loop will excecute.
 		INSERT INTO @idTable
 		SELECT i.storedID
 		FROM @inRecibosIDTable i
 
-        --Insert into the temporary table that contains all final ids.
-        insert into @finalReceiptIDTable
-        select i.storedID
-        from @inRecibosIDTable i
+		--Insert into the temporary table that contains all final ids.
+		INSERT INTO @finalReceiptIDTable
+		SELECT i.storedID
+		FROM @inRecibosIDTable i
 
-		set @montoTotal = 0
-		set @MontoInteresMot = 0
-		set @MontoRecibo = 0		
+		SET @montoTotal = 0
+		SET @MontoInteresMot = 0
+		SET @MontoRecibo = 0
 
 		WHILE (
 				SELECT COUNT(tmp.storedID)
@@ -66,7 +69,7 @@ declare @finalReceiptIDTable table (storedID int)
 			WHERE R.id = @idRecibo
 
 			-- Calcular los intereses
-			 SET @MontoInteresMot = CASE 
+			SET @MontoInteresMot = CASE 
 					WHEN GETDATE() < @FechaVencimiento
 						THEN 0
 					ELSE ((@MontoRecibo * (@TasaInteres / 365)) * ABS(DATEDIFF(DAY, @FechaVencimiento, GETDATE())))
@@ -77,12 +80,20 @@ declare @finalReceiptIDTable table (storedID int)
 			BEGIN
 				-- Se agrega el monto del recibo de intereses al monto total
 				SET @montoTotal = @montoTotal + @MontoInteresMot
-                SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+				SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+
 				BEGIN TRANSACTION
-				INSERT INTO dbo.Recibo(idPropiedad, idConceptoCobro
-				, idTipoEstado, fecha, fechaVencimiento, monto, activo)
-				SELECT  
-					R.idPropiedad,
+
+				INSERT INTO dbo.Recibo (
+					idPropiedad,
+					idConceptoCobro,
+					idTipoEstado,
+					fecha,
+					fechaVencimiento,
+					monto,
+					activo
+					)
+				SELECT R.idPropiedad,
 					C.id,
 					T.id,
 					GETDATE(),
@@ -93,27 +104,30 @@ declare @finalReceiptIDTable table (storedID int)
 				INNER JOIN [dbo].[ConceptoCobro] C ON C.nombre = 'Interes Moratorio'
 				INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pendiente'
 				WHERE R.id = @idRecibo
+
 				COMMIT
+
 				--insertar el id del recibo recien creado a la lista final
-				insert @finalReceiptIDTable select SCOPE_IDENTITY()
-
+				INSERT @finalReceiptIDTable
+				SELECT SCOPE_IDENTITY()
 			END
-
 		END
-        	select i.id as [id],
-            p.NumFinca [numP],
-            c.nombre as [cc],
-            i.fecha as [fecha],
-            i.fechaVencimiento as [fv],
-            i.monto as [monto]
-            from Recibo i
-            INNER Join @finalReceiptIDTable t on t.storedID = i.id
-            inner join dbo.ConceptoCobro C on C.id = i.idConceptoCobro
-            inner join dbo.Propiedad P on P.id = i.idPropiedad
-        return 0
 
-	end try
-	begin catch
+		SELECT i.id AS [id],
+			p.NumFinca [numP],
+			c.nombre AS [cc],
+			i.fecha AS [fecha],
+			i.fechaVencimiento AS [fv],
+			i.monto AS [monto]
+		FROM Recibo i
+		INNER JOIN @finalReceiptIDTable t ON t.storedID = i.id
+		INNER JOIN dbo.ConceptoCobro C ON C.id = i.idConceptoCobro
+		INNER JOIN dbo.Propiedad P ON P.id = i.idPropiedad
+
+		RETURN 0
+	END TRY
+
+	BEGIN CATCH
 		IF @@TRANCOUNT > 0
 			ROLLBACK
 
@@ -124,7 +138,8 @@ declare @finalReceiptIDTable table (storedID int)
 		PRINT ('ERROR:' + @errorMsg)
 
 		RETURN - 1 * @@ERROR
-	end catch
-end
+	END CATCH
+END
+GO
 
-go
+

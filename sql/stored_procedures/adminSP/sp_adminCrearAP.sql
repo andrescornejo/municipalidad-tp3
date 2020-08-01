@@ -20,7 +20,7 @@ BEGIN
 		SET NOCOUNT ON
 
 		DECLARE @comprobante INT,
-			@tasaInteres FLOAT
+			@tasaInteres FLOAT = 0.1
 		DECLARE @tmpRecibos udt_idTable
 
 		INSERT INTO @tmpRecibos (storedID)

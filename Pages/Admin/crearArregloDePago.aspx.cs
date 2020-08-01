@@ -19,7 +19,6 @@ namespace Muni.Pages.Admin
         string montoTotal;
         string cuotaMensual;
 
-        #region PageLoadMethods
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Page.IsPostBack)
@@ -28,42 +27,21 @@ namespace Muni.Pages.Admin
             }
             if (!Page.IsPostBack)
             {
+                clearViewStates();
                 lblDisplay.Text = "Crear un arreglo de pago.";
-                masterLoad();
-            }
-        }
-
-        protected void masterLoad()
-        {
-            ////User and property are selected.
-            if (ViewState["user"] != null && ViewState["prop"] != null)
-            {
-
-            }
-            //User is selected.
-            else if (ViewState["user"] != null && ViewState["prop"] == null)
-            {
-                currentUser = ViewState["user"].ToString();
-                loadUsers();
-                setUser(currentUser);
-                loadProperties(currentUser);
-                setPageToPropetySelect();
-                //System.Diagnostics.Debug.WriteLine("selected user: " + currentUser);
-            }
-            //Nothing is selected.
-            else
-            {
                 loadUsers();
                 setPageToUserSelect();
             }
         }
 
-        #endregion
-
         #region LayoutChangingMethods
 
         protected void setPageToUserSelect()
         {
+            clearViewStates();
+            btnSetUser.Visible = true;
+            ddlUsers.Enabled = true;
+            ddlProp.Enabled = true;
             lblInstruct.Text = "Seleccione un usuario.";
             btnCancel.Visible = false;
             btnAbort.Visible = false;
@@ -442,6 +420,14 @@ namespace Muni.Pages.Admin
                 return false;
             else
                 return true;
+        }
+
+        protected void clearViewStates()
+        {
+            ViewState["monto"] = null;
+            ViewState["prop"] = null;
+            ViewState["cuota"] = null;
+            ViewState["user"] = null;
         }
 
         #endregion

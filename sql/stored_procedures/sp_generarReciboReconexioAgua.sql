@@ -35,7 +35,7 @@ BEGIN
 			1
 		FROM [dbo].[ConceptoCobro] C
 		INNER JOIN [dbo].[CC_Fijo] CF ON C.id = CF.id
-		INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
+		INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pendiente'
 		WHERE C.nombre = 'Reconexion de agua'
 	END TRY
 

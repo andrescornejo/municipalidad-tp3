@@ -60,7 +60,7 @@ BEGIN
 				FROM @tmpPropiedadesTipoCC tmp
 				INNER JOIN [dbo].[ConceptoCobro] CC ON @idCC = CC.id
 				INNER JOIN [dbo].[CC_Fijo] CF ON @idCC = CF.id
-				INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
+				INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pendiente'
 			END
 		END
 	END TRY

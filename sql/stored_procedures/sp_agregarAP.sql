@@ -17,9 +17,7 @@ BEGIN
 		SET NOCOUNT ON
 		DECLARE @hdoc INT, @tmpIdRecibos udt_idTable, @numFinca INT, @montoAP MONEY, @cuota MONEY, @plazo INT
         
-		DECLARE @APXML TABLE (numFinca INT, plazo INT, monto MONEY, cuota MONEY)
-		
-		DECLARE @tmpAPInfo TABLE (numFinca INT, plazo INT, monto MONEY, cuota MONEY)
+		DECLARE @APXML TABLE (numFinca INT, plazo INT)
         
 		EXEC sp_xml_preparedocument @hdoc OUT,
 			@OperacionXML
@@ -39,7 +37,7 @@ BEGIN
 		WHERE @inFecha = fecha
 
         EXEC sp_xml_removedocument @hdoc;
-
+		select * from @APXML
 		-- Calcular el monto para cada AP
         WHILE (EXISTS(SELECT 1 FROM @APXML))
         BEGIN
@@ -62,33 +60,15 @@ BEGIN
 				@inPlazo = @plazo,
 				@outCuotaAP = @cuota OUTPUT;
 
-			EXEC csp_adminCrearAP
+			EXEC csp_crearAP
 				@inNumFinca = @numFinca,
 				@inMontoTotal = @montoAP,
 				@inPlazo = @plazo,
 				@inCuota = @cuota,
-				@inUserName = 'SERVERNAME'
-			
-			--INSERT INTO @tmpAPInfo (numFinca, plazo, monto, cuota)
-			--SELECT tmp.numFinca, tmp.plazo, @montoAP, @cuota
-			--FROM @APXML tmp
-			--WHERE tmp.numFinca = @numFinca
+				@inFecha = @inFecha
 
 			DELETE TOP (1) @APXML
         END
-		
-		--insertar los AP desde la tabla temporal
-		--SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-		--BEGIN TRANSACTION
-
-			--insertar los AP desde la tabla temporal
-			--WHILE (EXISTS(SELECT 1 FROM @tmpAPInfo))
-			--BEGIN
-
-			--END
-
-		--COMMIT
-
 
 	END TRY
 

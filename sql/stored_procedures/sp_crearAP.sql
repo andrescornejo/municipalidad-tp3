@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: csp_adminCrearAP
+ * Stored Procedure: csp_crearAP
  * Description: 
  * Author: Pablo Alpizar
  */
@@ -9,11 +9,11 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_adminCrearAP @inNumFinca INT,
+ALTER PROC csp_crearAP @inNumFinca INT,
 	@inMontoTotal MONEY,
 	@inPlazo INT,
 	@inCuota MONEY,
-	@inUserName NVARCHAR(50)
+    @inFecha DATE
 AS
 BEGIN
 	BEGIN TRY
@@ -76,8 +76,8 @@ BEGIN
 				@inPlazo,
 				@inPlazo,
 				@inCuota,
-				GETDATE(),
-				GETDATE(),
+				@inFecha,
+				@inFecha,
 				1
 			FROM [dbo].[Propiedad] P
 			WHERE P.NumFinca = @inNumFinca
@@ -101,12 +101,11 @@ BEGIN
 				0,
 				@inPlazo,
 				@inMontoTotal,
-				GETDATE(),
-				@inUserName,
+				@inFecha,
+                'OPERACIONES',
 				1
-			FROM [dbo].[AP] AP
-			INNER JOIN [dbo].[TipoMovAP] TM ON TM.Nombre = 'Debito'
-			ORDER BY AP.id DESC
+			FROM [dbo].[TipoMovAP] TM
+            WHERE TM.Nombre = 'Debito'
 			
 			-- actualizar el AP
 			UPDATE [dbo].[AP]
@@ -134,8 +133,9 @@ BEGIN
 					FROM [dbo].[TipoEstadoRecibo] T
 					WHERE T.estado = 'Pagado'
 				)
-			FROM [dbo].[Recibo] R
-			INNER JOIN @tmpRecibos tmp ON tmp.storedID = R.id 
+            FROM [dbo].[Recibo] R
+            INNER JOIN @tmpRecibos tmp ON tmp.storedID = R.id
+            
 		COMMIT
 	END TRY
 
@@ -153,5 +153,3 @@ BEGIN
 	END CATCH
 END
 GO
-
-

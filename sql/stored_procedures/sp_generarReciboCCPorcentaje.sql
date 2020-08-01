@@ -123,7 +123,7 @@ BEGIN
 				tmpR.Monto,
 				1
 			FROM @tmpRecibos tmpR
-			INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pediente'
+			INNER JOIN [dbo].[TipoEstadoRecibo] T ON T.estado = 'Pendiente'
 
 			COMMIT
 			RETURN 1

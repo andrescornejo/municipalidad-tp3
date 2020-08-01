@@ -51,7 +51,7 @@ BEGIN
 	EXEC csp_agregarCambioValorPropiedad @firstDate, @FechasOperacionXML 
 	EXEC csp_agregarTransConsumo @firstDate, @FechasOperacionXML
 	EXEC csp_agregarAP @firstDate, @FechasOperacionXML
-	EXEC csp_generarRecibosAP @firstDate
+	--EXEC csp_generarRecibosAP @firstDate
 	EXEC csp_generarReciboCCFijo @firstDate
 	EXEC csp_generarReciboCCPorcentaje @firstDate
 	EXEC csp_generarRecibosAgua @firstDate

@@ -1,0 +1,4 @@
+<TipoMovAP>
+	<MovAP id="1" Nombre="Debito"/>
+	<MovAP id="2" Nombre="Credito"/>
+</TipoMovAP>

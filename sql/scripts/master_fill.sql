@@ -187,8 +187,6 @@ SET IDENTITY_INSERT dbo.TipoDocID ON
 
 DECLARE @hdoc INT;
 
-SET IDENTITY_INSERT TipoDocID ON
-
 DECLARE @TipoDocIDXML XML;
 
 SELECT @TipoDocIDXML = T
@@ -424,5 +422,38 @@ FROM TipoEstadoRecibo
 EXEC sp_xml_removedocument @hdoc
 
 SET IDENTITY_INSERT TipoEstadoRecibo OFF
+GO
+
+-- Tabla TipoMovAP
+SET IDENTITY_INSERT TipoMovAP ON
+DECLARE @hdoc INT;
+
+DECLARE @TipoMovAPXML XML;
+
+SELECT @TipoMovAPXML = T
+FROM openrowset(BULK 'C:\xml\TipoMovAP.xml', single_blob) AS TipoMovAP(T)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@TipoMovAPXML
+
+INSERT [dbo].[TipoMovAP] (
+    id,
+	Nombre,
+	activo
+	)
+SELECT X.id,
+	X.Nombre,
+	1
+FROM openxml(@hdoc, '/TipoMovAP/MovAP', 1) WITH (
+		id INT,
+		Nombre NVARCHAR(25)
+		) AS X
+
+SELECT *
+FROM TipoMovAP
+
+EXEC sp_xml_removedocument @hdoc
+
+SET IDENTITY_INSERT TipoMovAP OFF
 GO
 

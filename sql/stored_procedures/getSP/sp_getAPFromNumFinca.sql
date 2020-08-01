@@ -47,5 +47,3 @@ BEGIN
 END
 GO
 
-
-EXEC csp_getAPFromNumFinca 2132441

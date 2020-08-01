@@ -95,6 +95,7 @@
     <Content Include="Pages\Admin\crudTables.aspx" />
     <Content Include="Pages\Client\ClientPanel.aspx" />
     <Content Include="Pages\Client\ClientPanelUC.ascx" />
+    <Content Include="Pages\Client\consultarAP_DeProp.aspx" />
     <Content Include="Pages\Client\consultarComprobantes.aspx" />
     <Content Include="Pages\Client\consultarRecibosPendientes.aspx" />
     <Content Include="Pages\LoginPage.aspx" />
@@ -370,6 +371,13 @@
     </Compile>
     <Compile Include="Pages\Client\ClientPanelUC.ascx.designer.cs">
       <DependentUpon>ClientPanelUC.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Client\consultarAP_DeProp.aspx.cs">
+      <DependentUpon>consultarAP_DeProp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Client\consultarAP_DeProp.aspx.designer.cs">
+      <DependentUpon>consultarAP_DeProp.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Client\consultarComprobantes.aspx.cs">
       <DependentUpon>consultarComprobantes.aspx</DependentUpon>

@@ -87,6 +87,60 @@ namespace Muni.Pages.Admin
         protected global::System.Web.UI.WebControls.DropDownList ddlProp;
 
         /// <summary>
+        /// lblPlazo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblPlazo;
+
+        /// <summary>
+        /// tbPlazo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbPlazo;
+
+        /// <summary>
+        /// lblMontoDesc control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMontoDesc;
+
+        /// <summary>
+        /// lblMontoTotal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMontoTotal;
+
+        /// <summary>
+        /// lblCuotaDesc control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCuotaDesc;
+
+        /// <summary>
+        /// lblCuotaTotal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCuotaTotal;
+
+        /// <summary>
         /// btnCancel control.
         /// </summary>
         /// <remarks>
@@ -130,6 +184,15 @@ namespace Muni.Pages.Admin
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnConsultRates;
+
+        /// <summary>
+        /// btnCreateAP control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCreateAP;
 
         /// <summary>
         /// lblGrid control.

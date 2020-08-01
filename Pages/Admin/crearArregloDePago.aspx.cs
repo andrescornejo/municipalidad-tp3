@@ -39,6 +39,7 @@ namespace Muni.Pages.Admin
         protected void setPageToUserSelect()
         {
             clearViewStates();
+            tbPlazo.Text = "";
             btnSetUser.Visible = true;
             ddlUsers.Enabled = true;
             ddlProp.Enabled = true;
@@ -331,6 +332,7 @@ namespace Muni.Pages.Admin
                 createAP(monto, plazo, cuota, Globals.CURRENTUSER, prop);
                 MessageBox.Show("Arreglo de pago creado exitosamente");
                 setPageToUserSelect();
+                loadUsers();
             }
             else
                 MessageBox.Show("Entradas inválidas.");

@@ -366,13 +366,13 @@
     <PropiedadVersusPropietario NumFinca="1476188" identificacion="116540323"/>
     <PropiedadVersusPropietario NumFinca="2101885" identificacion="116540323"/>
     <PropiedadVersusPropietario NumFinca="4182870" identificacion="116540323"/>
-    <Usuario Nombre="LDiaz" password="2o8Gd" tipo="cliente"/>
+    <Usuario Nombre="alpizar" password="1" tipo="cliente"/>
     <Usuario Nombre="EHernandez" password="v65XB" tipo="cliente"/>
     <Usuario Nombre="KPerez" password="j3VS2" tipo="cliente"/>
-    <UsuarioVersusPropiedad NumFinca="1236736" nombreUsuario="LDiaz"/>
-    <UsuarioVersusPropiedad NumFinca="1476188" nombreUsuario="LDiaz"/>
-    <UsuarioVersusPropiedad NumFinca="2101885" nombreUsuario="LDiaz"/>
-    <UsuarioVersusPropiedad NumFinca="4182870" nombreUsuario="LDiaz"/>
+    <UsuarioVersusPropiedad NumFinca="1236736" nombreUsuario="alpizar"/>
+    <UsuarioVersusPropiedad NumFinca="1476188" nombreUsuario="alpizar"/>
+    <UsuarioVersusPropiedad NumFinca="2101885" nombreUsuario="alpizar"/>
+    <UsuarioVersusPropiedad NumFinca="4182870" nombreUsuario="alpizar"/>
     <ConceptoCobroVersusPropiedad idcobro="1" NumFinca="1858970"/>
     <ConceptoCobroVersusPropiedad idcobro="5" NumFinca="4182442"/>
     <ConceptoCobroVersusPropiedad idcobro="5" NumFinca="1236736"/>
@@ -1910,7 +1910,7 @@
     <Pago TipoRecibo="5" NumFinca="6147839"/>
     <Pago TipoRecibo="5" NumFinca="7981775"/>
     <Pago TipoRecibo="5" NumFinca="4182442"/>
-    <Pago TipoRecibo="5" NumFinca="1236736"/>
+    <!-- <Pago TipoRecibo="5" NumFinca="1236736"/> -->
     <Pago TipoRecibo="5" NumFinca="7393203"/>
     <Pago TipoRecibo="5" NumFinca="3958319"/>
     <Pago TipoRecibo="5" NumFinca="3158340"/>
@@ -3467,7 +3467,7 @@
     <Pago TipoRecibo="5" NumFinca="6147839"/>
     <Pago TipoRecibo="5" NumFinca="7981775"/>
     <Pago TipoRecibo="5" NumFinca="4182442"/>
-    <Pago TipoRecibo="5" NumFinca="1236736"/>
+    <!-- <Pago TipoRecibo="5" NumFinca="1236736"/> -->
     <Pago TipoRecibo="5" NumFinca="7393203"/>
     <Pago TipoRecibo="5" NumFinca="3958319"/>
     <Pago TipoRecibo="5" NumFinca="3158340"/>

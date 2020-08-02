@@ -40,7 +40,7 @@
                     </Columns>
                 </asp:GridView>
             </div>
-            <div class="jumbotron py-auto">
+            <div class="jumbotron py-auto" id="divMovAP" runat="server">
                 <div class="pb-3">
                     <asp:Label ID="lblMovAP" CssClass="h4" runat="server" Text="Placeholder text"></asp:Label>
                 </div>

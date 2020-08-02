@@ -104,9 +104,9 @@ BEGIN
 				GETDATE(),
 				@inUserName,
 				1
-			FROM [dbo].[AP] AP
-			INNER JOIN [dbo].[TipoMovAP] TM ON TM.Nombre = 'Debito'
-			ORDER BY AP.id DESC
+			-- FROM [dbo].[AP] AP
+			from[dbo].[TipoMovAP] TM where TM.Nombre = 'Debito'
+			-- ORDER BY AP.id DESC
 			
 			-- actualizar el AP
 			UPDATE [dbo].[AP]

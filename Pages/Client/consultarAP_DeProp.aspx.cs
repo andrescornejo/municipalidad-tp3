@@ -33,6 +33,7 @@ namespace Muni.Pages.Client
                     lblMovAP.Visible = false;
                     gridAP.Visible = false;
                     gridMovAP.Visible = false;
+                    divMovAP.Visible = false;
                 }
                 else
                 {

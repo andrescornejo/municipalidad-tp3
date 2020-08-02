@@ -122,7 +122,7 @@ namespace Muni.Pages.Admin
 
                 try
                 {
-                    SqlDataAdapter adapter = new SqlDataAdapter("SELECT username FROM dbo.Usuario", con);
+                    SqlDataAdapter adapter = new SqlDataAdapter("SELECT username FROM dbo.Usuario order by username", con);
                     adapter.Fill(dt);
 
                     ddlUsers.DataSource = dt;

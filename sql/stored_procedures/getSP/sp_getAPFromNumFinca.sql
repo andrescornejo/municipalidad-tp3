@@ -24,7 +24,7 @@ BEGIN
             A.montoOriginal AS [monto],
             A.saldo AS [saldo],
             A.cuota AS [cuota],
-            A.tasaInteresAnual AS [TasaI],
+            (A.tasaInteresAnual * 100) AS [TasaI],
             A.insertedAt AS [fecha],
             A.updatedAt AS [fechaA]
         FROM [dbo].[AP] A

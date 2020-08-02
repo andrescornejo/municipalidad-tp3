@@ -1,7 +1,7 @@
 /*
- * Stored Procedure: csp_clienteSeleccionaRecibos
+ * Stored Procedure: csp_crearRecibosIntMoratorio
  * Description: 
- * Author: Andres Cornejo
+ * Author: Pablo Alpizar
  */
 USE municipalidad
 GO
@@ -9,7 +9,8 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_clienteSeleccionaRecibos @inRecibosIDTable udt_idTable READONLY,
+ALTER PROC csp_crearRecibosIntMoratorio @inRecibosIDTable udt_idTable READONLY,
+    @inFecha DATE,
 	@montoTotal MONEY OUT
 AS
 BEGIN
@@ -96,8 +97,8 @@ BEGIN
 				SELECT R.idPropiedad,
 					C.id,
 					T.id,
-					GETDATE(),
-					GETDATE(),
+					@inFecha,
+					@inFecha,
 					@MontoInteresMot,
 					1
 				FROM [dbo].[Recibo] R
@@ -141,5 +142,3 @@ BEGIN
 	END CATCH
 END
 GO
-
-

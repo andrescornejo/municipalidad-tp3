@@ -153,6 +153,35 @@ FROM openxml(@hdoc, '/TipoDocIdentidad/TipoDocId', 1) WITH (
 SET IDENTITY_INSERT dbo.TipoDocID OFF
 EXEC sp_xml_removedocument @hdoc
 GO
+--INSERT TIPOMOVAP CATALOG TABLE
+SET IDENTITY_INSERT TipoMovAP ON
+DECLARE @hdoc INT;
+
+DECLARE @TipoMovAPXML XML;
+
+SELECT @TipoMovAPXML = T
+FROM openrowset(BULK 'C:\xml\TipoMovAP.xml', single_blob) AS TipoMovAP(T)
+
+EXEC sp_xml_preparedocument @hdoc OUT,
+	@TipoMovAPXML
+
+INSERT [dbo].[TipoMovAP] (
+    id,
+	Nombre,
+	activo
+	)
+SELECT X.id,
+	X.Nombre,
+	1
+FROM openxml(@hdoc, '/TipoMovAP/MovAP', 1) WITH (
+		id INT,
+		Nombre NVARCHAR(25)
+		) AS X
+
+EXEC sp_xml_removedocument @hdoc
+
+SET IDENTITY_INSERT TipoMovAP OFF
+GO
 
 --INSERT TIPO ESTADO CATALOG TABLE
 DECLARE @hdoc INT;

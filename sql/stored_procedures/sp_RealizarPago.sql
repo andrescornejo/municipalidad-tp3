@@ -33,7 +33,7 @@ BEGIN
 		WHERE R.idTipoEstado = (
 			SELECT T.id 
 			FROM [dbo].[TipoEstadoRecibo] T
-			WHERE T.estado = 'Pediente'
+			WHERE T.estado = 'Pendiente'
 		)
 			AND R.idPropiedad = P.id
 			AND R.activo = 1
@@ -46,6 +46,7 @@ BEGIN
 				WHERE CC.id = @idTipoCC
 				)
 
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRANSACTION
 
 		WHILE (
@@ -149,6 +150,8 @@ BEGIN
 					@idPropiedad,
 					@idRecibo
 			END
+
+			
 		END
 
 		COMMIT

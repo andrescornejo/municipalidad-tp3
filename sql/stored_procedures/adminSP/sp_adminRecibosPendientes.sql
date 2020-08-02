@@ -1,5 +1,5 @@
 /*
- * Stored Procedure: csp_clienteSeleccionaRecibos
+ * Stored Procedure: csp_adminRecibosPendientes
  * Description: 
  * Author: Andres Cornejo
  */
@@ -9,7 +9,7 @@ GO
 CREATE
 	OR
 
-ALTER PROC csp_clienteSeleccionaRecibos @inRecibosIDTable udt_idTable READONLY,
+ALTER PROC csp_adminRecibosPendientes @inNumProp INT,
 	@montoTotal MONEY OUT
 AS
 BEGIN
@@ -23,16 +23,31 @@ BEGIN
 			@idRecibo INT
 		DECLARE @idTable TABLE (storedID INT)
 		DECLARE @finalReceiptIDTable TABLE (storedID INT)
+		DECLARE @idProp INT,
+			@idEstadoPendiente INT
+
+		SET @idEstadoPendiente = (
+				SELECT TOP 1 e.id
+				FROM TipoEstadoRecibo e
+				WHERE e.estado = 'Pendiente'
+				)
+		SET @idProp = (
+				SELECT TOP 1 p.id
+				FROM Propiedad p
+				WHERE p.NumFinca = @inNumProp
+				)
 
 		--Insert into the temporary table where the loop will excecute.
 		INSERT INTO @idTable
-		SELECT i.storedID
-		FROM @inRecibosIDTable i
+		SELECT r.id
+		FROM Recibo r
+		WHERE r.idPropiedad = @idProp
+			AND r.idTipoEstado = @idEstadoPendiente
 
 		--Insert into the temporary table that contains all final ids.
 		INSERT INTO @finalReceiptIDTable
 		SELECT i.storedID
-		FROM @inRecibosIDTable i
+		FROM @idTable i
 
 		SET @montoTotal = 0
 		SET @MontoInteresMot = 0

@@ -31,6 +31,7 @@
                 <li class="my-1"><a href="verPropiedadesDeUsuario.aspx" class="btn btn-dark btn-lg">Propiedades de un usuario</a></li>
                 <li class="my-1"><a href="verUsuarioDePropiedad.aspx" class="btn btn-dark btn-lg">Usuario de una propiedad</a></li>
                 <li class="my-1"><a href="consultaCambioEntidad.aspx" class="btn btn-dark btn-lg">Cambios a entidades</a></li>
+                <li class="my-1"><a href="crearArregloDePago.aspx" class="btn btn-dark btn-lg">Arreglos de pago</a></li>
             </ul>
         </div> 
     </div>

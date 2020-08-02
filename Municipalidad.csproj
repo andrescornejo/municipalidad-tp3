@@ -88,12 +88,14 @@
     <Content Include="Pages\Admin\AdminPanel.aspx" />
     <Content Include="Pages\Admin\AdminPanelUC.ascx" />
     <Content Include="Pages\Admin\consultaCambioEntidad.aspx" />
+    <Content Include="Pages\Admin\crearArregloDePago.aspx" />
     <Content Include="Pages\Admin\crudPropiedades.aspx" />
     <Content Include="Pages\Admin\crudPropietarios.aspx" />
     <Content Include="Pages\Admin\crudUsuario.aspx" />
     <Content Include="Pages\Admin\crudTables.aspx" />
     <Content Include="Pages\Client\ClientPanel.aspx" />
     <Content Include="Pages\Client\ClientPanelUC.ascx" />
+    <Content Include="Pages\Client\consultarAP_DeProp.aspx" />
     <Content Include="Pages\Client\consultarComprobantes.aspx" />
     <Content Include="Pages\Client\consultarRecibosPendientes.aspx" />
     <Content Include="Pages\LoginPage.aspx" />
@@ -321,6 +323,13 @@
     <Compile Include="Pages\Admin\consultaCambioEntidad.aspx.designer.cs">
       <DependentUpon>consultaCambioEntidad.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Admin\crearArregloDePago.aspx.cs">
+      <DependentUpon>crearArregloDePago.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Admin\crearArregloDePago.aspx.designer.cs">
+      <DependentUpon>crearArregloDePago.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Admin\crudPropiedades.aspx.cs">
       <DependentUpon>crudPropiedades.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -362,6 +371,13 @@
     </Compile>
     <Compile Include="Pages\Client\ClientPanelUC.ascx.designer.cs">
       <DependentUpon>ClientPanelUC.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Client\consultarAP_DeProp.aspx.cs">
+      <DependentUpon>consultarAP_DeProp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Client\consultarAP_DeProp.aspx.designer.cs">
+      <DependentUpon>consultarAP_DeProp.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Client\consultarComprobantes.aspx.cs">
       <DependentUpon>consultarComprobantes.aspx</DependentUpon>

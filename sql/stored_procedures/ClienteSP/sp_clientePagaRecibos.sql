@@ -31,10 +31,12 @@ BEGIN
 		INSERT INTO [dbo].[ComprobanteDePago] (
 			fecha,
 			MontoTotal,
+			descripcion,
 			activo
 			)
 		SELECT GETDATE(),
 			0,
+			'Pago en línea.',
 			1
 
 		-- Guardar el id del comprobante

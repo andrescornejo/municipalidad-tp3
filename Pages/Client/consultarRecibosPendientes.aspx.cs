@@ -13,6 +13,7 @@ using System.Web.UI.WebControls;
 
 namespace Muni.Pages.Client
 {
+
     public partial class consultarRecibosPendientes : System.Web.UI.Page
     {
         int currentProp;
@@ -23,7 +24,7 @@ namespace Muni.Pages.Client
                 montoTotal = Convert.ToDouble(ViewState["Monto"].ToString());
             else
                 ViewState["Monto"] = -1;
-            //This is needed to make the buttons inside the modal work beyond opening and closing said modal.
+            //This is needed to make the buttons inside the modal excecute server side code and close the modal.
             ScriptManager scriptManager = ScriptManager.GetCurrent(this.Page);
             scriptManager.RegisterPostBackControl(this.btnPay);
             scriptManager.RegisterPostBackControl(this.btnCancel);
@@ -50,34 +51,32 @@ namespace Muni.Pages.Client
         {
             DataTable rawTable = getGridViewIDs();
             verifyConsultData(rawTable);
-            //upModal.Update();
 
-            ////For debugging purposes.
-            //dg1.DataSource = rawTable;
-            //dg1.DataBind();
+            //debugGridView(rawTable);
         }
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
+            setIDVisibility(true, true);
             DataTable dt = getModalGridIDs();
             abortPayment(dt);
             setModalVisibility("myModal", false);
             MessageBox.Show("Pago de recibos abortado.");
             reloadGridView();
+
+            //debugGridView(dt);
         }
 
         protected void btnPay_Click(object sender, EventArgs e)
         {
+            setIDVisibility(true, true);
             DataTable dt = getModalGridIDs();
             excecutePayment(dt);          
             setModalVisibility("myModal", false);
             MessageBox.Show("Pago de recibos realizado con éxito.");
             reloadGridView();
 
-            //For debugging purposes.
-            //dg1.DataSource = selectedData;
-            //dg1.DataBind();
-
+            //debugGridView(dt);
         }
 
         #endregion
@@ -94,7 +93,7 @@ namespace Muni.Pages.Client
             lblModalTitle.Text = "Pago de recibos pendientes";
             lblModalBody.Text = "Recibos pendientes de la propiedad: " + currentProp;
             lblModalTotal.Text = "Monto total a pagar: " + montoTotal;
-
+            setIDVisibility(false, true);
             setModalVisibility("myModal", true);
         }
 
@@ -176,7 +175,7 @@ namespace Muni.Pages.Client
 
         protected DataTable getGridViewIDs()
         {
-            setIDVisibility(true);
+            setIDVisibility(true, false);
             DataTable dt = new DataTable();
 
             dt.Columns.Add("column1");
@@ -192,13 +191,12 @@ namespace Muni.Pages.Client
                 }
             }
             prepareTable(dt);
-
+            setIDVisibility(false, false);
             return dt;
         }
 
         protected DataTable getModalGridIDs()
         {
-            setIDVisibility(true);
             DataTable dt = new DataTable();
 
             dt.Columns.Add("column1");
@@ -210,7 +208,6 @@ namespace Muni.Pages.Client
                 dt.Rows.Add(dr);
             }
             prepareTable(dt);
-
             return dt;
         }
 
@@ -228,6 +225,7 @@ namespace Muni.Pages.Client
         {
             btnConsult.Visible = false;
             DataTable table = Cliente.getRecibosPendientes(currentProp);
+            setIDVisibility(true, false);
             if (table != null && table.Rows.Count > 0)
             {
                 gridView.Visible = true;
@@ -235,7 +233,7 @@ namespace Muni.Pages.Client
                 lblLead.Text = "Seleccione los recibos que desea pagar";
                 gridView.DataSource = table;
                 gridView.DataBind();
-                setIDVisibility(false);
+                setIDVisibility(false, false);
             }
             else
             {
@@ -244,9 +242,12 @@ namespace Muni.Pages.Client
             }
         }
 
-        protected void setIDVisibility(bool val)
+        protected void setIDVisibility(bool val, bool isModalGrid)
         {
-            gridView.Columns[1].Visible = val;
+            if (isModalGrid)
+                gridModal.Columns[0].Visible = val;
+            else
+                gridView.Columns[1].Visible = val;
         }
 
         protected void setModalVisibility(string modalName, bool input)
@@ -331,6 +332,14 @@ namespace Muni.Pages.Client
                 }
             }
             return true;
+        }
+
+        protected void debugGridView(DataTable input)
+        {
+
+            //For debugging purposes.
+            dg1.DataSource = input;
+            dg1.DataBind();
         }
 
         #endregion

@@ -29,7 +29,12 @@ BEGIN
 		INNER JOIN [dbo].[Propiedad] P ON @inNumFinca = P.NumFinca
 		WHERE R.idPropiedad = P.id
 			AND R.activo = 1
-			AND R.idTipoEstado = (select e.id from TipoEstadoRecibo e where e.estado='Pagado')
+			AND R.idTipoEstado = (
+				SELECT e.id
+				FROM TipoEstadoRecibo e
+				WHERE e.estado = 'Pagado'
+				)
+
 		WHILE (
 				SELECT COUNT(*)
 				FROM @tmpIdComprob
@@ -55,11 +60,13 @@ BEGIN
 			WHERE cmp.id = @idRef
 		END
 
-		SELECT cmp.idComprobante AS [Numero Comprobante],
-			cmp.fecha AS [Fecha],
-			cmp.Monto AS [Monto Total]
-		FROM @tmpComprobantes cmp
-		ORDER BY cmp.fecha ASC
+		SELECT v.[numCom],
+			v.[fecha],
+			v.[monto],
+			v.[desc]
+		FROM view_ComprobanteENCRYPTED v
+		INNER JOIN @tmpComprobantes cmp ON cmp.idComprobante = v.numCom
+		ORDER BY v.fecha ASC
 	END TRY
 
 	BEGIN CATCH

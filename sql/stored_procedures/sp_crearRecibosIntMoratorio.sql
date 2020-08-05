@@ -71,9 +71,9 @@ BEGIN
 
 			-- Calcular los intereses
 			SET @MontoInteresMot = CASE 
-					WHEN GETDATE() < @FechaVencimiento
+					WHEN @inFecha < @FechaVencimiento
 						THEN 0
-					ELSE ((@MontoRecibo * (@TasaInteres / 365)) * ABS(DATEDIFF(DAY, @FechaVencimiento, GETDATE())))
+					ELSE ((@MontoRecibo * (@TasaInteres / 365)) * ABS(DATEDIFF(DAY, @FechaVencimiento, @inFecha)))
 					END
 
 			-- Si el monto es mayor a cero generar un recibo de intereses temporal

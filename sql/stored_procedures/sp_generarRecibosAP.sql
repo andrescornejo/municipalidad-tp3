@@ -29,6 +29,7 @@ BEGIN
 				) = (
 				SELECT DAY(@inFecha)
 				)
+			AND AP.saldo > 0
 
 		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 
